@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویژار | دستیار هوشمند جزوه‌نویسی</title>
+    <!-- استایل‌ها -->
+    <link rel="stylesheet" href="style.css">
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- فونت‌های گوگل برای متن و لوگو -->
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-mode">
+
+    <!-- هدر شناور -->
+    <header class="floating-header">
+        <div class="brand">
+            <i class="fa-solid fa-feather logo-icon"></i>
+            <h1 class="brand-name">ویژار</h1>
+        </div>
+        <div class="header-actions">
+            <button id="backToDashBtn" class="btn-icon hidden" title="بازگشت به داشبورد"><i class="fa-solid fa-house"></i></button>
+            <button id="settingsBtn" class="btn-icon" title="تنظیمات"><i class="fa-solid fa-gear"></i></button>
+        </div>
+    </header>
+
+    <!-- صفحه داشبورد (مدیریت جزوه‌ها) -->
+    <section id="dashboard-view" class="view-section active">
+        <div class="dashboard-container">
+            <div class="dash-header">
+                <h2>جزوه‌های من</h2>
+                <button id="createNewDocBtn" class="btn-primary"><i class="fa-solid fa-plus"></i> جزوه جدید</button>
+            </div>
+            
+            <div class="categories-wrapper">
+                <div class="category-sidebar">
+                    <h3>دسته‌بندی‌ها</h3>
+                    <ul id="categoryList">
+                        <li class="active-cat">همه جزوه‌ها</li>
+                        <li>دانشگاه</li>
+                        <li>برنامه‌نویسی</li>
+                    </ul>
+                </div>
+                <div class="documents-grid" id="documentsGrid">
+                    <!-- کارت‌های جزوه اینجا لود می‌شوند -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- صفحه ویرایشگر (محیط کار اصلی) -->
+    <section id="editor-view" class="view-section hidden">
+        <div class="workspace" id="exportArea">
+            <div class="editor-container">
+                <input type="text" id="documentTitle" class="doc-title-input" placeholder="عنوان جزوه را وارد کنید...">
+                <!-- کادر ویرایشگر که باگ بیرون زدن متن در آن حل شده است -->
+                <div id="editor" contenteditable="true" class="editor-box" placeholder="شروع به نوشتن کنید..."></div>
+            </div>
+            
+            <aside class="notes-sidebar">
+                <div class="notes-header">
+                    <i class="fa-solid fa-thumbtack"></i> نکات مهم
+                </div>
+                <div id="pinnedNotesArea" class="pinned-notes-container"></div>
+            </aside>
+        </div>
+        
+        <!-- نوار ابزار شناور در پایین -->
+        <div class="floating-toolbar">
+            <button class="tool-btn" data-command="bold" title="ضخیم (Ctrl+B)"><i class="fa-solid fa-bold"></i></button>
+            <button class="tool-btn" data-command="italic" title="مورب (Ctrl+I)"><i class="fa-solid fa-italic"></i></button>
+            <button class="tool-btn" data-command="underline" title="زیرخط (Ctrl+U)"><i class="fa-solid fa-underline"></i></button>
+            <button class="tool-btn" data-command="strikeThrough" title="خط‌خورده"><i class="fa-solid fa-strikethrough"></i></button>
+            <div class="divider"></div>
+            <button class="tool-btn" data-command="justifyRight" title="راست‌چین"><i class="fa-solid fa-align-right"></i></button>
+            <button class="tool-btn" data-command="justifyCenter" title="وسط‌چین"><i class="fa-solid fa-align-center"></i></button>
+            <button class="tool-btn" data-command="justifyLeft" title="چپ‌چین"><i class="fa-solid fa-align-left"></i></button>
+            <div class="divider"></div>
+            <button id="saveDocBtn" class="tool-btn action-btn" title="ذخیره"><i class="fa-solid fa-floppy-disk"></i></button>
+            <button onclick="exportToImage()" class="tool-btn action-btn" title="خروجی تصویر"><i class="fa-solid fa-image"></i></button>
+        </div>
+    </section>
+
+    <!-- پنل تنظیمات -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> تنظیمات ویژار</h3>
+                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <span>حالت شب (Dark Mode)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <span>اندازه فونت ویرایشگر</span>
+                    <input type="range" id="fontSizeSlider" min="14" max="24" value="16">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- پاپ‌آپ افزودن یادداشت برای کلمه -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <h3>توضیح برای: <span id="selectedWordDisplay" class="highlight-preview"></span></h3>
+            <textarea id="noteInput" rows="4" placeholder="نکته خود را بنویسید..."></textarea>
+            <label class="checkbox-container">
+                <input type="checkbox" id="pinNoteCheck"> همیشه نمایش داده شود (پین)
+            </label>
+            <div class="modal-actions">
+                <button id="saveNoteBtn" class="btn-primary">ثبت</button>
+                <button class="btn-text close-modal">لغو</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- کتابخانه‌ها -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

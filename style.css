@@ -1,217 +1,163 @@
-/* متغیرهای رنگی (تم نئونی سایبرپانک) */
+/* تعریف فونت‌های درخواستی کاربر */
+@font-face { font-family: 'Liana'; src: url('https://cdn.fontcdn.ir/Font/Persian/Lalezar/Lalezar.woff2') format('woff2'); } /* جایگزین موقت تا لود لوکال */
+@font-face { font-family: 'Kahroba'; src: url('https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.woff2') format('woff2'); }
+@font-face { font-family: 'IranSansDastnevis'; src: url('https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.woff2') format('woff2'); }
+@font-face { font-family: 'Vazirmatn'; src: url('https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.woff2') format('woff2'); }
+
 :root {
-    --bg-dark: #0a0a0a;
-    --bg-surface: #111111;
-    --text-main: #e0e0e0;
-    --text-muted: #888888;
-    
-    --neon-blue: #00ffff;
-    --neon-purple: #8A2BE2;
-    --neon-gold: #ffd700;
-    
-    /* افکت شیشه‌ای واقعی (Glassmorphism) */
-    --glass-bg: rgba(17, 17, 17, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --glass-blur: blur(20px);
-    
-    font-family: 'Vazirmatn', sans-serif;
+    /* تم روشن مینیمال (پیش‌فرض) */
+    --bg-main: #f1f5f9;
+    --surface: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --primary: #3b82f6;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-toolbar: rgba(255, 255, 255, 0.85);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* فونت هدر (برگردانده شده به درخواست شما) */
-.brand-name {
-    font-family: 'Aref Ruqaa', serif;
-    font-size: 2.2rem;
-    color: var(--neon-gold);
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-    margin: 0;
+[data-theme="dark"] {
+    --bg-main: #18181b;
+    --surface: #27272a;
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --border-color: #3f3f46;
+    --primary: #60a5fa;
+    --glass-bg: rgba(39, 39, 42, 0.7);
+    --glass-toolbar: rgba(39, 39, 42, 0.85);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+[data-theme="paper"] {
+    --bg-main: #e9e5d9;
+    --surface: #fdf6e3;
+    --text-main: #332d20;
+    --text-muted: #857f6b;
+    --border-color: #d1ccbc;
+    --primary: #d97736;
+    --glass-bg: rgba(253, 246, 227, 0.7);
+    --glass-toolbar: rgba(253, 246, 227, 0.9);
+    --shadow: 0 4px 15px rgba(100, 90, 70, 0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    background-color: var(--bg-dark);
-    background-image: 
-        radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.08), transparent 25%),
-        radial-gradient(circle at 85% 30%, rgba(0, 255, 255, 0.05), transparent 25%);
-    color: var(--text-main);
-    margin: 0; height: 100vh; overflow: hidden;
+    background: var(--bg-main); color: var(--text-main);
+    font-family: 'Liana', sans-serif; /* فونت دیفالت کل برنامه */
+    height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+    transition: background 0.3s, color 0.3s;
 }
 
-/* المان‌های شیشه‌ای (Glass Panels) */
-.glass-header, .glass-panel, .glass-toolbar, .context-menu {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
+/* پنل‌های شیشه‌ای پریمیوم */
+.glass-panel {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 16px; box-shadow: var(--shadow);
 }
 
-.glass-header {
-    position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
-    width: 95%; max-width: 1400px; height: 70px;
-    border-radius: 20px; display: flex; justify-content: space-between; align-items: center;
-    padding: 0 30px; z-index: 1000;
+/* هدر مینیمال */
+.app-header {
+    height: 65px; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 30px; background: var(--surface); border-bottom: 1px solid var(--border-color);
+    z-index: 100;
 }
+.brand { display: flex; align-items: center; gap: 10px; }
+.logo-icon { color: var(--primary); font-size: 1.5rem; }
+.brand-name { font-family: inherit; font-size: 1.8rem; font-weight: bold; }
+.header-actions { display: flex; align-items: center; gap: 15px; }
 
-.brand { display: flex; align-items: center; gap: 15px; }
-.logo-icon { color: var(--neon-gold); font-size: 1.8rem; }
-.header-actions { display: flex; gap: 15px; }
-.btn-icon {
-    background: transparent; border: 1px solid transparent; color: var(--text-main);
-    width: 40px; height: 40px; border-radius: 12px; cursor: pointer; transition: 0.3s;
-    display: flex; justify-content: center; align-items: center;
+/* دکمه‌ها */
+.btn-ghost { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: inherit; display: flex; gap: 8px; align-items: center; }
+.btn-ghost:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-icon, .btn-icon-small { background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+.btn-icon { font-size: 1.2rem; width: 40px; height: 40px; border-radius: 50%; }
+.btn-icon:hover { background: var(--border-color); color: var(--text-main); }
+
+.divider-v { width: 1px; height: 24px; background: var(--border-color); }
+
+/* ساختار سه ستونه */
+.main-layout { display: flex; flex: 1; padding: 20px; gap: 20px; max-width: 1600px; margin: 0 auto; width: 100%; height: calc(100vh - 65px); }
+
+/* ستون راست (فولدرها) */
+.sidebar-right { width: 250px; padding: 20px; display: flex; flex-direction: column; }
+.sidebar-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.folder-list { list-style: none; }
+.folder-list li { padding: 10px 15px; border-radius: 8px; margin-bottom: 5px; cursor: pointer; color: var(--text-muted); display: flex; gap: 10px; align-items: center; transition: 0.2s; }
+.folder-list li:hover { background: var(--border-color); color: var(--text-main); }
+.folder-list li.active-folder { background: rgba(59, 130, 246, 0.1); color: var(--primary); font-weight: bold; }
+
+/* ستون مرکز (ویرایشگر و نوار ابزار شناور) */
+.editor-center { flex: 2; position: relative; display: flex; flex-direction: column; }
+.editor-wrapper { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+.doc-title-input { padding: 20px 30px; font-size: 1.8rem; font-weight: bold; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: var(--text-main); outline: none; font-family: inherit; }
+
+/* کادر متن با اسکرول */
+.editor-box { flex: 1; padding: 30px; padding-bottom: 100px; overflow-y: auto; outline: none; line-height: 2; font-size: 18px; position: relative; }
+
+/* نوار ابزار شناور روی جزوه (استایل شیشه‌ای) */
+.floating-doc-toolbar {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--glass-toolbar); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--border-color); border-radius: 30px; padding: 10px 20px;
+    display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    z-index: 10; transition: 0.3s;
 }
-.btn-icon:hover { border-color: var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+.floating-doc-toolbar:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
 
-/* ساختار کلی صفحات */
-.view-section { height: 100vh; padding-top: 100px; box-sizing: border-box; overflow-y: auto; }
-.hidden { display: none !important; opacity: 0; }
+.tool-select { background: transparent; border: none; color: var(--text-main); font-family: inherit; outline: none; cursor: pointer; }
+.tool-btn { background: transparent; border: none; color: var(--text-muted); width: 35px; height: 35px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+.tool-btn:hover { background: var(--border-color); color: var(--primary); }
+.action-btn { color: var(--primary); }
+.primary-glow { color: white; background: var(--primary); box-shadow: 0 4px 10px rgba(59,130,246,0.3); }
+.divider { width: 1px; height: 20px; background: var(--border-color); margin: 0 5px; }
 
-/* صفحه نقش‌ها (طراحی نئونی جدید) */
-.neon-container {
-    max-width: 800px; margin: 50px auto; text-align: center;
-    animation: fadeUp 0.8s ease forwards;
-}
-.neon-title { font-size: 2.5rem; color: #fff; text-shadow: 0 0 15px var(--neon-purple); margin-bottom: 10px; }
-.neon-subtitle { color: var(--neon-blue); margin-bottom: 50px; letter-spacing: 1px; }
+/* حالت‌های جزوه */
+.mode-linear img { display: none !important; } /* فقط متن */
+.mode-rich img { max-width: 100%; border-radius: 8px; margin: 10px 0; } /* متن و تصویر استاندارد */
+.mode-free img { position: absolute; cursor: move; } /* حالت آزاد */
 
-.role-cards { display: flex; gap: 30px; justify-content: center; }
-.neon-card {
-    flex: 1; padding: 40px 20px; border-radius: 20px; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.5));
-    border: 1px solid rgba(138, 43, 226, 0.2); position: relative; overflow: hidden;
-}
-.neon-card::before {
-    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(138,43,226,0.1) 0%, transparent 70%);
-    opacity: 0; transition: 0.4s;
-}
-.neon-card:hover { transform: translateY(-15px); border-color: var(--neon-purple); box-shadow: 0 15px 30px rgba(138,43,226,0.15); }
-.neon-card:hover::before { opacity: 1; }
-.icon-wrapper { font-size: 3.5rem; color: var(--neon-blue); margin-bottom: 20px; filter: drop-shadow(0 0 8px rgba(0,255,255,0.4)); }
+/* ستون چپ (نکات و چکنویس) */
+.sidebar-left { width: 320px; display: flex; flex-direction: column; gap: 20px; }
+.notes-panel { flex: 1; padding: 20px; display: flex; flex-direction: column; overflow: hidden; }
+.scratchpad-panel { flex: 1; padding: 20px; display: flex; flex-direction: column; }
 
-@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.panel-header { font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); }
+.btn-text-small { background: rgba(59,130,246,0.1); color: var(--primary); border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.8rem; }
 
-/* داشبورد (فولدر راست، جزوه چپ) */
-.dashboard-layout { display: flex; max-width: 1400px; margin: 0 auto; gap: 30px; padding: 20px; }
-.folders-sidebar { width: 300px; border-radius: 20px; padding: 25px; height: max-content; }
-.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
-.sidebar-header h3 { color: var(--neon-purple); margin: 0; }
-.add-folder-btn { background: transparent; border: none; color: var(--text-main); cursor: pointer; transition: 0.2s; }
-.add-folder-btn:hover { color: var(--neon-blue); }
+/* ابزارهای چکنویس */
+.scratchpad-tools { display: flex; gap: 5px; margin-bottom: 10px; background: var(--bg-main); padding: 5px; border-radius: 10px; justify-content: center; }
+.board-tool { background: transparent; border: none; color: var(--text-muted); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.board-tool.active, .board-tool:hover { background: var(--surface); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.color-picker { -webkit-appearance: none; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; background: transparent; padding: 0; }
+.color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+.color-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
+canvas { background: transparent; border: 1px dashed var(--border-color); border-radius: 12px; flex: 1; cursor: crosshair; touch-action: none; }
 
-.folder-list { list-style: none; padding: 0; margin: 0; }
-.folder-list li {
-    padding: 12px 15px; border-radius: 12px; margin-bottom: 8px; cursor: pointer;
-    transition: 0.2s; display: flex; align-items: center; gap: 12px; color: var(--text-muted);
-}
-.folder-list li:hover { background: rgba(255,255,255,0.02); color: #fff; }
-.folder-list li.active-folder { background: rgba(138,43,226,0.15); color: var(--neon-blue); border-right: 3px solid var(--neon-blue); }
+/* مودال‌ها */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
+.modal.show { display: flex; animation: fadeIn 0.2s; }
+.modal-content { width: 450px; padding: 30px; text-align: center; }
 
-.documents-area { flex: 1; }
-.dash-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.neon-badge { background: rgba(0,255,255,0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; margin-right: 10px; }
+/* کارت‌های انتخاب بارگذاری */
+.action-cards { display: flex; gap: 15px; margin: 25px 0; }
+.action-card { flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); padding: 20px 10px; border-radius: 16px; cursor: pointer; transition: 0.2s; }
+.action-card i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+.action-card h4 { margin-bottom: 5px; }
+.action-card p { font-size: 0.8rem; color: var(--text-muted); }
+.action-card:hover { border-color: var(--primary); background: rgba(59,130,246,0.05); transform: translateY(-5px); }
 
-/* استایل دکمه‌های نئونی */
-.btn-neon {
-    background: var(--neon-purple); color: white; border: none; padding: 12px 25px;
-    border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s;
-    box-shadow: 0 0 15px rgba(138,43,226,0.3);
-}
-.btn-neon:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(138,43,226,0.6); }
+/* دکمه‌های خروجی */
+.export-options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.btn-export { background: var(--bg-main); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; color: var(--text-main); font-family: inherit; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+.btn-export i { font-size: 1.5rem; color: var(--primary); }
+.btn-export:hover { border-color: var(--primary); }
+.btn-close-modal { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-family: inherit; margin-top: 10px; }
 
-.btn-neon-outline, .btn-neon-outline-small {
-    background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
-    padding: 12px 25px; border-radius: 12px; cursor: pointer; transition: 0.3s;
-}
-.btn-neon-outline:hover { background: rgba(0,255,255,0.1); box-shadow: 0 0 15px rgba(0,255,255,0.3); }
-
-/* حالت خالی (Empty State) */
-.empty-state { text-align: center; padding: 80px 20px; background: rgba(255,255,255,0.01); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1); }
-.empty-icon { font-size: 4rem; color: var(--text-muted); margin-bottom: 20px; opacity: 0.5; }
-.empty-state p { color: var(--text-muted); margin-bottom: 25px; font-size: 1.1rem; }
-
-.documents-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-.doc-card { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; cursor: pointer; transition: 0.3s; }
-.doc-card:hover { border-color: var(--neon-purple); background: rgba(138,43,226,0.05); }
-.doc-card h3 { margin: 0 0 10px 0; color: #fff; font-size: 1.1rem; }
-.doc-card p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
-
-/* محیط ویرایشگر سه ستونه */
-.workspace-layout { display: flex; gap: 20px; max-width: 1600px; margin: 0 auto; height: calc(100vh - 160px); padding: 0 20px; }
-.side-panel { flex: 1; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; }
-.editor-main { flex: 2; border-radius: 20px; padding: 30px; display: flex; flex-direction: column; position: relative; }
-
-.panel-header { font-weight: bold; color: var(--neon-purple); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 10px; }
-
-/* وایت‌برد */
-.whiteboard-area { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-canvas { background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--glass-border); cursor: crosshair; }
-.whiteboard-tools { display: flex; gap: 10px; justify-content: center; }
-
-/* ادیتور */
-.doc-title-input {
-    width: 100%; padding: 15px 0; font-size: 1.5rem; font-weight: bold; border: none;
-    border-bottom: 1px solid var(--glass-border); background: transparent; color: #fff; outline: none; margin-bottom: 20px;
-}
-/* اعمال اسکرول به خود ادیتور تا محتوا زیر هدر شیشه‌ای پایین نرود */
-.editor-box { flex: 1; outline: none; line-height: 2; overflow-y: auto; padding-bottom: 80px; }
-
-/* نوار ابزار شیشه‌ای پایین (متن از زیرش رد میشه) */
-.glass-toolbar {
-    position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-    border-radius: 30px; display: flex; align-items: center; gap: 8px; padding: 10px 20px; z-index: 1000;
-}
-.tool-btn { background: transparent; border: none; width: 40px; height: 40px; border-radius: 50%; color: var(--text-main); font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
-.tool-btn:hover { background: rgba(255,255,255,0.1); color: var(--neon-blue); }
-.divider { width: 1px; height: 24px; background: var(--glass-border); margin: 0 5px; }
-
-/* کاستوم کردن inputهای پیش‌فرض مرورگر */
-.custom-select { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; }
-.custom-select option { background: var(--bg-surface); color: #fff; }
-.custom-color-input { -webkit-appearance: none; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; background: transparent; padding: 0; }
-.custom-color-input::-webkit-color-swatch-wrapper { padding: 0; }
-.custom-color-input::-webkit-color-swatch { border: 1px solid var(--glass-border); border-radius: 50%; }
-
-/* مودال‌ها (حل مشکل کادرهای سفید تنظیمات) */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; justify-content: center; align-items: center; }
-.modal.show { display: flex; animation: fadeIn 0.3s; }
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-
-.modal-content { width: 450px; padding: 30px; border-radius: 20px; position: relative; }
-.border-neon { border: 1px solid var(--neon-purple); box-shadow: 0 0 30px rgba(138,43,226,0.1); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
-.modal-header h3 { margin: 0; color: var(--neon-blue); }
-.btn-icon-small { background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
-.btn-icon-small:hover { color: #ff4757; }
-
-.setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-/* شخصی‌سازی range slider */
-.custom-range { -webkit-appearance: none; width: 150px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); outline: none; }
-.custom-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--neon-purple); cursor: pointer; box-shadow: 0 0 10px var(--neon-purple); }
-
-.custom-textarea { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; padding: 15px; border-radius: 12px; resize: none; outline: none; font-family: inherit; margin-bottom: 15px; }
-.custom-textarea:focus { border-color: var(--neon-blue); }
-
-.label-selector { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-.color-options { display: flex; gap: 10px; }
-.color-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-.color-dot.active { border-color: #fff; transform: scale(1.2); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
-
-/* کاستوم چک‌باکس */
-.custom-checkbox { display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 25px; }
-.custom-checkbox input { display: none; }
-.checkmark { width: 18px; height: 18px; border: 1px solid var(--glass-border); border-radius: 4px; display: inline-block; position: relative; transition: 0.2s; }
-.custom-checkbox input:checked ~ .checkmark { background: var(--neon-purple); border-color: var(--neon-purple); }
-.custom-checkbox input:checked ~ .checkmark::after { content: ''; position: absolute; left: 5px; top: 1px; width: 4px; height: 9px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
-
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-.btn-text { background: transparent; border: none; color: var(--text-muted); cursor: pointer; }
-
-/* منوی راست‌کلیک */
-.context-menu { position: fixed; border-radius: 12px; padding: 8px 0; min-width: 180px; z-index: 2000; }
-.context-menu ul { list-style: none; padding: 0; margin: 0; }
-.context-menu li { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; color: var(--text-main); }
-.context-menu li:hover { background: rgba(0,255,255,0.1); color: var(--neon-blue); }
-
-/* برچسب‌های هایلایت درون متن */
-.hl-blue { background: rgba(0, 255, 255, 0.15); border-bottom: 1px solid #00ffff; }
-.hl-purple { background: rgba(138, 43, 226, 0.2); border-bottom: 1px solid #8A2BE2; }
-.hl-gold { background: rgba(255, 215, 0, 0.15); border-bottom: 1px solid #ffd700; }
+/* تنظیمات */
+.setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; text-align: right; }
+.form-control { background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 8px; font-family: inherit; outline: none; }
+.theme-selector { display: flex; gap: 10px; }
+.theme-circle { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border-color); transition: 0.2s; }
+.theme-circle:hover { transform: scale(1.1); }

@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="style.css">
     <!-- آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- فونت‌های گوگل برای متن و لوگو -->
-    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- فونت‌های گوگل -->
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
-<body class="light-mode">
+<body class="dark-mode"> <!-- پیش‌فرض روی تم تیره تنظیم شد -->
 
-    <!-- هدر شناور -->
-    <header class="floating-header">
+    <!-- هدر شیشه‌ای -->
+    <header class="glass-header">
         <div class="brand">
             <i class="fa-solid fa-feather logo-icon"></i>
             <h1 class="brand-name">ویژار</h1>
@@ -25,93 +25,168 @@
         </div>
     </header>
 
-    <!-- صفحه داشبورد (مدیریت جزوه‌ها) -->
-    <section id="dashboard-view" class="view-section active">
-        <div class="dashboard-container">
-            <div class="dash-header">
-                <h2>جزوه‌های من</h2>
-                <button id="createNewDocBtn" class="btn-primary"><i class="fa-solid fa-plus"></i> جزوه جدید</button>
-            </div>
-            
-            <div class="categories-wrapper">
-                <div class="category-sidebar">
-                    <h3>دسته‌بندی‌ها</h3>
-                    <ul id="categoryList">
-                        <li class="active-cat">همه جزوه‌ها</li>
-                        <li>دانشگاه</li>
-                        <li>برنامه‌نویسی</li>
-                    </ul>
+    <!-- صفحه انتخاب نقش (Role Selection) -->
+    <section id="role-view" class="view-section active">
+        <div class="role-container glass-panel">
+            <h2>به ویژار خوش آمدید</h2>
+            <p>لطفاً نقش خود را برای شخصی‌سازی محیط انتخاب کنید:</p>
+            <div class="role-cards">
+                <div class="role-card" data-role="student">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <h3>دانشجو / دانش‌آموز</h3>
+                    <p>تمرکز بر یادداشت‌برداری، مرور سریع و خلاصه‌سازی.</p>
                 </div>
-                <div class="documents-grid" id="documentsGrid">
-                    <!-- کارت‌های جزوه اینجا لود می‌شوند -->
+                <div class="role-card" data-role="teacher">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <h3>استاد / معلم</h3>
+                    <p>امکانات ویژه تدریس، وایت‌برد و طراحی سوالات.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- صفحه ویرایشگر (محیط کار اصلی) -->
-    <section id="editor-view" class="view-section hidden">
-        <div class="workspace" id="exportArea">
-            <div class="editor-container">
-                <input type="text" id="documentTitle" class="doc-title-input" placeholder="عنوان جزوه را وارد کنید...">
-                <!-- کادر ویرایشگر که باگ بیرون زدن متن در آن حل شده است -->
-                <div id="editor" contenteditable="true" class="editor-box" placeholder="شروع به نوشتن کنید..."></div>
+    <!-- صفحه داشبورد (بازطراحی شده) -->
+    <section id="dashboard-view" class="view-section hidden">
+        <div class="dashboard-container">
+            <div class="dash-header">
+                <h2>جزوه‌های من <span id="userRoleBadge" class="badge"></span></h2>
+                <button id="createNewDocBtn" class="btn-primary glow-btn"><i class="fa-solid fa-plus"></i> ایجاد جزوه جدید</button>
             </div>
             
-            <aside class="notes-sidebar">
-                <div class="notes-header">
-                    <i class="fa-solid fa-thumbtack"></i> نکات مهم
+            <div class="dashboard-grid">
+                <aside class="category-sidebar glass-panel">
+                    <h3>دسته‌بندی‌ها</h3>
+                    <ul id="categoryList">
+                        <li class="active-cat"><i class="fa-solid fa-folder-open"></i> همه جزوه‌ها</li>
+                        <li><i class="fa-solid fa-folder"></i> دانشگاه</li>
+                        <li><i class="fa-solid fa-folder"></i> برنامه‌نویسی</li>
+                    </ul>
+                </aside>
+                <main class="documents-area">
+                    <div class="documents-grid" id="documentsGrid">
+                        <!-- کارت‌های جزوه با ظاهر جدید اینجا قرار می‌گیرند -->
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- صفحه ویرایشگر و وایت‌برد -->
+    <section id="editor-view" class="view-section hidden">
+        <div class="workspace-layout">
+            <!-- ستون ابزارهای کناری (وایت‌برد) -->
+            <aside class="side-panel left-panel glass-panel">
+                 <div class="panel-header">
+                    <i class="fa-solid fa-chalkboard"></i> وایت‌برد
+                </div>
+                <div class="whiteboard-area">
+                     <canvas id="whiteboard" width="250" height="400"></canvas>
+                     <div class="whiteboard-tools">
+                         <button id="clearBoardBtn" title="پاک کردن"><i class="fa-solid fa-eraser"></i></button>
+                         <input type="color" id="boardColor" value="#ffffff">
+                     </div>
+                </div>
+            </aside>
+
+            <!-- ادیتور اصلی -->
+            <main class="editor-main glass-panel">
+                <input type="text" id="documentTitle" class="doc-title-input" placeholder="عنوان جزوه را وارد کنید...">
+                <div id="editor" contenteditable="true" class="editor-box" placeholder="شروع به نوشتن کنید..."></div>
+            </main>
+            
+            <!-- ستون نکات -->
+            <aside class="side-panel right-panel glass-panel">
+                <div class="panel-header">
+                    <i class="fa-solid fa-thumbtack"></i> نکات پین‌شده
                 </div>
                 <div id="pinnedNotesArea" class="pinned-notes-container"></div>
             </aside>
         </div>
         
-        <!-- نوار ابزار شناور در پایین -->
-        <div class="floating-toolbar">
-            <button class="tool-btn" data-command="bold" title="ضخیم (Ctrl+B)"><i class="fa-solid fa-bold"></i></button>
-            <button class="tool-btn" data-command="italic" title="مورب (Ctrl+I)"><i class="fa-solid fa-italic"></i></button>
-            <button class="tool-btn" data-command="underline" title="زیرخط (Ctrl+U)"><i class="fa-solid fa-underline"></i></button>
-            <button class="tool-btn" data-command="strikeThrough" title="خط‌خورده"><i class="fa-solid fa-strikethrough"></i></button>
+        <!-- نوار ابزار شیشه‌ای پایین -->
+        <div class="glass-toolbar">
+            <button class="tool-btn" data-command="bold" title="ضخیم"><i class="fa-solid fa-bold"></i></button>
+            <button class="tool-btn" data-command="italic" title="مورب"><i class="fa-solid fa-italic"></i></button>
+            <button class="tool-btn" data-command="underline" title="زیرخط"><i class="fa-solid fa-underline"></i></button>
             <div class="divider"></div>
             <button class="tool-btn" data-command="justifyRight" title="راست‌چین"><i class="fa-solid fa-align-right"></i></button>
             <button class="tool-btn" data-command="justifyCenter" title="وسط‌چین"><i class="fa-solid fa-align-center"></i></button>
             <button class="tool-btn" data-command="justifyLeft" title="چپ‌چین"><i class="fa-solid fa-align-left"></i></button>
             <div class="divider"></div>
-            <button id="saveDocBtn" class="tool-btn action-btn" title="ذخیره"><i class="fa-solid fa-floppy-disk"></i></button>
-            <button onclick="exportToImage()" class="tool-btn action-btn" title="خروجی تصویر"><i class="fa-solid fa-image"></i></button>
+            <input type="color" id="textColorPicker" class="color-picker" title="رنگ متن">
+            <div class="divider"></div>
+            <button id="saveDocBtn" class="tool-btn action-btn glow-btn" title="ذخیره"><i class="fa-solid fa-floppy-disk"></i></button>
         </div>
     </section>
 
-    <!-- پنل تنظیمات -->
+    <!-- منوی کلیک راست سفارشی -->
+    <div id="customContextMenu" class="context-menu glass-panel hidden">
+        <ul>
+            <li id="menuHighlight"><i class="fa-solid fa-highlighter"></i> هایلایت و یادداشت</li>
+            <li id="menuBold"><i class="fa-solid fa-bold"></i> بولد کردن</li>
+            <li id="menuColor"><i class="fa-solid fa-palette"></i> تغییر رنگ</li>
+        </ul>
+    </div>
+
+    <!-- مودال تنظیمات گسترده -->
     <div id="settingsModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content glass-panel">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-sliders"></i> تنظیمات ویژار</h3>
-                <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+                <button class="close-modal btn-icon"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="settings-body">
-                <div class="setting-item">
-                    <span>حالت شب (Dark Mode)</span>
-                    <label class="switch">
-                        <input type="checkbox" id="themeToggle">
-                        <span class="slider round"></span>
-                    </label>
+                <div class="setting-group">
+                    <h4>ظاهر</h4>
+                    <div class="setting-item">
+                        <span>تم اپلیکیشن</span>
+                        <select id="themeSelect" class="form-control">
+                            <option value="dark">شب (تاریک)</option>
+                            <option value="light">روز (روشن)</option>
+                            <option value="ocean">اقیانوس (آبی تیره)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>اندازه فونت ویرایشگر</span>
+                        <div class="range-wrapper">
+                            <input type="range" id="fontSizeSlider" min="14" max="28" value="18">
+                            <span id="fontSizeDisplay">18px</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="setting-item">
-                    <span>اندازه فونت ویرایشگر</span>
-                    <input type="range" id="fontSizeSlider" min="14" max="24" value="16">
+                <div class="setting-group">
+                    <h4>حساب کاربری</h4>
+                    <div class="setting-item">
+                        <span>تغییر نقش</span>
+                        <button id="resetRoleBtn" class="btn-secondary">انتخاب مجدد نقش</button>
+                    </div>
+                    <div class="setting-item">
+                        <span>پاکسازی اطلاعات</span>
+                        <button id="clearDataBtn" class="btn-danger">حذف تمام جزوه‌ها</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- پاپ‌آپ افزودن یادداشت برای کلمه -->
+    <!-- پاپ‌آپ یادداشت (با انتخاب برچسب متنوع) -->
     <div id="noteModal" class="modal">
-        <div class="modal-content">
-            <h3>توضیح برای: <span id="selectedWordDisplay" class="highlight-preview"></span></h3>
+        <div class="modal-content glass-panel">
+            <h3>یادداشت برای: <span id="selectedWordDisplay" class="highlight-preview"></span></h3>
             <textarea id="noteInput" rows="4" placeholder="نکته خود را بنویسید..."></textarea>
+            
+            <div class="label-selector">
+                <span>رنگ برچسب:</span>
+                <div class="color-options" id="labelColorOptions">
+                    <div class="color-dot active" data-color="blue" style="background: #4d61fe;"></div>
+                    <div class="color-dot" data-color="yellow" style="background: #f1c40f;"></div>
+                    <div class="color-dot" data-color="green" style="background: #2ecc71;"></div>
+                    <div class="color-dot" data-color="red" style="background: #e74c3c;"></div>
+                </div>
+            </div>
+
             <label class="checkbox-container">
-                <input type="checkbox" id="pinNoteCheck"> همیشه نمایش داده شود (پین)
+                <input type="checkbox" id="pinNoteCheck"> پین در ستون کناری
             </label>
             <div class="modal-actions">
                 <button id="saveNoteBtn" class="btn-primary">ثبت</button>
@@ -122,7 +197,6 @@
 
     <!-- کتابخانه‌ها -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

@@ -1,128 +1,31 @@
-// پایگاه داده لوکال
-let db = JSON.parse(localStorage.getItem('vijarDataV2')) || { docs: [], notes: {}, role: null, settings: { fontSize: 16 } };
-let currentDocId = null;
-let currentFolder = 'all';
-
-// المان‌ها
-const views = { role: document.getElementById('role-view'), dash: document.getElementById('dashboard-view'), edit: document.getElementById('editor-view') };
+// المان‌های پایه‌ای
 const editor = document.getElementById('editor');
-const contextMenu = document.getElementById('customContextMenu');
-const emptyState = document.getElementById('emptyState');
-const documentsGrid = document.getElementById('documentsGrid');
-let selectedTextRange = null;
+const fontSelect = document.getElementById('fontSelect');
+const docModeSelect = document.getElementById('docModeSelect');
+const modals = document.querySelectorAll('.modal');
 
-// --- 1. مدیریت نقش و رندر اولیه ---
-if (db.role) { initApp(); } 
+// --- 1. تنظیمات ظاهری (تم و فونت کل اپلیکیشن) ---
+document.getElementById('appFontSelect').addEventListener('change', (e) => {
+    document.body.style.fontFamily = `'${e.target.value}', sans-serif`;
+});
 
-document.querySelectorAll('.role-card').forEach(card => {
-    card.addEventListener('click', () => {
-        db.role = card.dataset.role;
-        localStorage.setItem('vijarDataV2', JSON.stringify(db));
-        initApp();
+document.querySelectorAll('.theme-circle').forEach(circle => {
+    circle.addEventListener('click', (e) => {
+        document.body.setAttribute('data-theme', e.target.dataset.setTheme);
     });
 });
 
-function initApp() {
-    showView('dash');
-    document.getElementById('userRoleBadge').textContent = db.role === 'teacher' ? 'استاد' : 'دانشجو';
-    document.body.style.fontSize = db.settings.fontSize + 'px';
-    document.getElementById('fontSizeSlider').value = db.settings.fontSize;
-    renderDashboard();
-}
-
-function showView(viewId) {
-    Object.values(views).forEach(v => v.classList.add('hidden'));
-    views[viewId].classList.remove('hidden');
-    document.getElementById('backToDashBtn').classList.toggle('hidden', viewId !== 'edit');
-}
-
-// --- 2. مدیریت فولدرها و داشبورد ---
-// کلیک روی فولدرها در سمت راست
-document.querySelectorAll('#folderList li').forEach(li => {
-    li.addEventListener('click', (e) => {
-        document.querySelectorAll('#folderList li').forEach(el => el.classList.remove('active-folder'));
-        e.currentTarget.classList.add('active-folder');
-        currentFolder = e.currentTarget.dataset.folder;
-        renderDashboard(); // فیلتر کردن جزوه‌ها بر اساس فولدر
-    });
+// فونت اختصاصی داخل جزوه
+fontSelect.addEventListener('change', (e) => {
+    editor.style.fontFamily = `'${e.target.value}', sans-serif`;
 });
 
-document.getElementById('createNewDocBtn').addEventListener('click', createNewDoc);
-document.getElementById('emptyCreateBtn').addEventListener('click', createNewDoc);
-
-function createNewDoc() {
-    currentDocId = Date.now().toString();
-    document.getElementById('documentTitle').value = '';
-    editor.innerHTML = '';
-    editor.style.fontFamily = "'Vazirmatn', sans-serif"; // فونت پیش‌فرض
-    document.getElementById('docFontSelect').value = "'Vazirmatn', sans-serif";
-    showView('edit');
-    renderPinnedNotes();
-}
-
-document.getElementById('backToDashBtn').addEventListener('click', () => { showView('dash'); renderDashboard(); });
-
-function renderDashboard() {
-    documentsGrid.innerHTML = '';
-    
-    // در این نسخه ساده، فعلاً همه رو نشون میدیم مگر اینکه فیلتر خاصی ذخیره کرده باشیم
-    const docsToShow = db.docs; // اگر خواستی قابلیت فیلتر رو اضافه کنی اینجا مینویسی
-    
-    if(docsToShow.length === 0) {
-        emptyState.classList.remove('hidden');
-        documentsGrid.style.display = 'none';
-    } else {
-        emptyState.classList.add('hidden');
-        documentsGrid.style.display = 'grid';
-        
-        docsToShow.forEach(doc => {
-            const card = document.createElement('div');
-            card.className = 'doc-card';
-            card.innerHTML = `
-                <h3><i class="fa-solid fa-file-lines" style="color: var(--neon-purple); margin-left:8px;"></i> ${doc.title || 'جزوه بدون نام'}</h3>
-                <p><i class="fa-regular fa-clock"></i> ویرایش: ${new Date(doc.id * 1).toLocaleDateString('fa-IR')}</p>
-            `;
-            card.onclick = () => loadDocument(doc.id);
-            documentsGrid.appendChild(card);
-        });
-    }
-}
-
-function loadDocument(id) {
-    const doc = db.docs.find(d => d.id === id);
-    if(doc) {
-        currentDocId = doc.id;
-        document.getElementById('documentTitle').value = doc.title;
-        editor.innerHTML = doc.content;
-        editor.style.fontFamily = doc.font || "'Vazirmatn', sans-serif";
-        document.getElementById('docFontSelect').value = doc.font || "'Vazirmatn', sans-serif";
-        showView('edit');
-        renderPinnedNotes();
-    }
-}
-
-document.getElementById('saveDocBtn').addEventListener('click', () => {
-    if(!currentDocId) return;
-    const docData = { 
-        id: currentDocId, 
-        title: document.getElementById('documentTitle').value, 
-        content: editor.innerHTML,
-        font: document.getElementById('docFontSelect').value
-    };
-    const idx = db.docs.findIndex(d => d.id === currentDocId);
-    idx > -1 ? db.docs[idx] = docData : db.docs.push(docData);
-    localStorage.setItem('vijarDataV2', JSON.stringify(db));
-    
-    const icon = document.querySelector('#saveDocBtn i');
-    icon.className = 'fa-solid fa-check';
-    setTimeout(() => icon.className = 'fa-solid fa-floppy-disk', 1000);
+// حالت‌های جزوه (خطی، پیشرفته، آزاد)
+docModeSelect.addEventListener('change', (e) => {
+    editor.className = 'editor-box ' + e.target.value;
 });
 
-// --- 3. فونت جزوه و ابزارهای نگارشی ---
-document.getElementById('docFontSelect').addEventListener('change', (e) => {
-    editor.style.fontFamily = e.target.value;
-});
-
+// ابزارهای نگارشی
 document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
     btn.addEventListener('mousedown', (e) => {
         e.preventDefault();
@@ -130,114 +33,151 @@ document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
     });
 });
 
-document.getElementById('textColorPicker').addEventListener('input', (e) => {
-    document.execCommand('foreColor', false, e.target.value);
-});
+// --- 2. مدیریت پاپ‌آپ‌ها ---
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModals() { modals.forEach(m => m.classList.remove('show')); }
 
-// --- 4. منوی راست‌کلیک ---
-editor.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    const selection = window.getSelection();
-    if(selection.toString().trim().length > 0) {
-        selectedTextRange = selection.getRangeAt(0);
-        contextMenu.style.left = e.clientX + 'px';
-        contextMenu.style.top = e.clientY + 'px';
-        contextMenu.classList.remove('hidden');
-    }
-});
-document.addEventListener('click', () => contextMenu.classList.add('hidden'));
+document.getElementById('importBtn').onclick = () => openModal('importModal');
+document.getElementById('exportBtn').onclick = () => openModal('exportModal');
+document.getElementById('settingsBtn').onclick = () => openModal('settingsModal');
+document.querySelectorAll('.btn-close-modal').forEach(btn => btn.onclick = closeModals);
 
-document.getElementById('menuBold').addEventListener('click', () => {
-    if(selectedTextRange) { window.getSelection().removeAllRanges(); window.getSelection().addRange(selectedTextRange); }
-    document.execCommand('bold');
-});
+// --- 3. وارد کردن فایل (Import) ---
+const fileInput = document.getElementById('fileInput');
 
-// --- 5. برچسب‌گذاری (یادداشت‌ها) ---
-const noteModal = document.getElementById('noteModal');
-let currentWordId = null;
-let selectedLabelColor = 'blue';
+document.getElementById('importAsTextBtn').onclick = () => fileInput.click();
+document.getElementById('importAsMediaBtn').onclick = () => fileInput.click();
 
-document.getElementById('menuHighlight').addEventListener('click', () => {
-    if(selectedTextRange) { window.getSelection().removeAllRanges(); window.getSelection().addRange(selectedTextRange); }
-    const text = window.getSelection().toString().trim();
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
     
-    currentWordId = 'word_' + Date.now();
-    const span = document.createElement('span');
-    span.id = currentWordId;
-    span.className = `hl-word hl-${selectedLabelColor}`;
-    span.textContent = text;
-    document.execCommand('insertHTML', false, span.outerHTML);
-    
-    document.getElementById('selectedWordDisplay').textContent = text;
-    document.getElementById('noteInput').value = '';
-    noteModal.classList.add('show');
-});
-
-document.querySelectorAll('.color-dot').forEach(dot => {
-    dot.addEventListener('click', (e) => {
-        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-        e.target.classList.add('active');
-        selectedLabelColor = e.target.dataset.color;
-    });
-});
-
-document.getElementById('saveNoteBtn').addEventListener('click', () => {
-    const text = document.getElementById('noteInput').value.trim();
-    if(text && currentWordId) {
-        const wordEl = document.getElementById(currentWordId);
-        wordEl.className = `hl-word hl-${selectedLabelColor}`;
-        db.notes[currentWordId] = { word: wordEl.textContent, text: text, color: selectedLabelColor, isPinned: document.getElementById('pinNoteCheck').checked };
-        localStorage.setItem('vijarDataV2', JSON.stringify(db));
-        renderPinnedNotes();
+    // خواندن فایل به عنوان تصویر برای پیوست
+    if(file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            document.execCommand('insertImage', false, event.target.result);
+            closeModals();
+        };
+        reader.readAsDataURL(file);
+    } else {
+        // خواندن به عنوان متن (شبیه‌سازی استخراج)
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const textNode = document.createTextNode(event.target.result);
+            editor.appendChild(textNode);
+            closeModals();
+        };
+        reader.readAsText(file);
     }
-    noteModal.classList.remove('show');
+    fileInput.value = ''; // ریست
 });
 
-function renderPinnedNotes() {
-    const area = document.getElementById('pinnedNotesArea');
-    area.innerHTML = '';
-    Object.values(db.notes).forEach(note => {
-        if(note.isPinned) {
-            let colorHex = note.color === 'blue' ? '#00ffff' : note.color === 'purple' ? '#8A2BE2' : '#ffd700';
-            area.innerHTML += `
-                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin-bottom: 12px; border-right: 3px solid ${colorHex};">
-                    <strong style="color:${colorHex}; font-size:0.9rem">${note.word}:</strong>
-                    <p style="margin-top:5px; font-size:0.9rem; color: #ddd;">${note.text}</p>
-                </div>`;
-        }
-    });
+// --- 4. خروجی گرفتن (Export) ---
+function exportDoc(format) {
+    const title = document.getElementById('documentTitle').value || 'جزوه_ویژار';
+    const content = editor.innerHTML;
+
+    if (format === 'word') {
+        // خروجی استاندارد و ساده برای ورد
+        const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+        const footer = "</body></html>";
+        const sourceHTML = header + content + footer;
+        const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+        const fileDownload = document.createElement("a");
+        document.body.appendChild(fileDownload);
+        fileDownload.href = source;
+        fileDownload.download = title + '.doc';
+        fileDownload.click();
+        document.body.removeChild(fileDownload);
+    } 
+    else if (format === 'pdf') {
+        const opt = { margin: 1, filename: title + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+        html2pdf().set(opt).from(editor).save();
+    } 
+    else if (format === 'image') {
+        html2canvas(editor).then(canvas => {
+            const link = document.createElement('a');
+            link.download = title + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+    closeModals();
 }
 
-// --- 6. وایت‌برد ---
-const canvas = document.getElementById('whiteboard');
+// --- 5. چکنویس تصویری (بدون پس‌زمینه) ---
+const canvas = document.getElementById('scratchpadCanvas');
 const ctx = canvas.getContext('2d');
 let drawing = false;
+let currentTool = 'pencil'; // pencil, marker, highlighter, eraser
 
-canvas.addEventListener('mousedown', () => drawing = true);
+// تنظیم سایز واقعی بوم
+canvas.width = canvas.parentElement.clientWidth - 40;
+canvas.height = 250;
+
+const boardTools = document.querySelectorAll('.board-tool[data-tool]');
+boardTools.forEach(btn => {
+    btn.onclick = () => {
+        boardTools.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTool = btn.dataset.tool;
+    };
+});
+
+canvas.addEventListener('mousedown', (e) => { drawing = true; draw(e); });
 canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
-canvas.addEventListener('mousemove', (e) => {
+canvas.addEventListener('mousemove', draw);
+
+function draw(e) {
     if(!drawing) return;
     const rect = canvas.getBoundingClientRect();
-    ctx.lineWidth = 2; ctx.lineCap = 'round';
-    ctx.strokeStyle = document.getElementById('boardColor').value;
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    // تنظیمات ابزارها
+    if(currentTool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 20;
+    } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = document.getElementById('boardColor').value;
+        
+        if(currentTool === 'pencil') {
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 1.0;
+        } else if(currentTool === 'marker') {
+            ctx.lineWidth = 6;
+            ctx.globalAlpha = 1.0;
+        } else if(currentTool === 'highlighter') {
+            ctx.lineWidth = 15;
+            ctx.globalAlpha = 0.3; // حالت شفاف برای هایلایت
+        }
+    }
+
+    ctx.lineTo(x, y);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-});
-document.getElementById('clearBoardBtn').addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+    ctx.moveTo(x, y);
+    
+    // ریست آلفا برای جلوگیری از باگ
+    ctx.globalAlpha = 1.0;
+}
 
-// --- 7. تنظیمات ---
-document.getElementById('settingsBtn').onclick = () => document.getElementById('settingsModal').classList.add('show');
-document.querySelectorAll('.close-modal').forEach(btn => btn.onclick = () => { document.getElementById('settingsModal').classList.remove('show'); noteModal.classList.remove('show'); });
+document.getElementById('clearBoardBtn').onclick = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
 
-document.getElementById('fontSizeSlider').addEventListener('input', (e) => {
-    document.body.style.fontSize = e.target.value + 'px';
-    db.settings.fontSize = e.target.value;
-    localStorage.setItem('vijarDataV2', JSON.stringify(db));
-});
-
-document.getElementById('resetRoleBtn').onclick = () => {
-    db.role = null; localStorage.setItem('vijarDataV2', JSON.stringify(db)); 
-    document.getElementById('settingsModal').classList.remove('show'); showView('role');
+// انتقال چکنویس به عنوان تصویر بدون بکگراند به جزوه
+document.getElementById('exportBoardToDocBtn').onclick = () => {
+    const dataUrl = canvas.toDataURL("image/png");
+    // فوکوس روی ادیتور و جایگذاری عکس
+    editor.focus();
+    const imgHtml = `<img src="${dataUrl}" style="background:transparent; max-width:100%; border:none;">`;
+    document.execCommand('insertHTML', false, imgHtml);
+    // پاک کردن بوم بعد از انتقال
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 };

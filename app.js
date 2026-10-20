@@ -1,176 +1,182 @@
-// --- متغیرهای سیستم ---
-let db = JSON.parse(localStorage.getItem('vijarDB')) || { docs: [], notes: {} };
+// پایگاه داده لوکال
+let db = JSON.parse(localStorage.getItem('vijarData')) || { docs: [], notes: {}, role: null, settings: { font: 18 } };
 let currentDocId = null;
 
-// المان‌های DOM
-const views = {
-    dash: document.getElementById('dashboard-view'),
-    edit: document.getElementById('editor-view')
-};
+// المان‌ها
+const views = { role: document.getElementById('role-view'), dash: document.getElementById('dashboard-view'), edit: document.getElementById('editor-view') };
 const editor = document.getElementById('editor');
-const titleInput = document.getElementById('documentTitle');
-const backBtn = document.getElementById('backToDashBtn');
-const documentsGrid = document.getElementById('documentsGrid');
-const toolBtns = document.querySelectorAll('.tool-btn[data-command]');
+const contextMenu = document.getElementById('customContextMenu');
+let selectedTextRange = null;
 
-// --- مدیریت تم (شب و روز) ---
-const themeToggle = document.getElementById('themeToggle');
-const isDarkMode = localStorage.getItem('dark-mode') === 'true';
-if(isDarkMode) {
-    document.body.classList.add('dark-mode');
-    themeToggle.checked = true;
-}
-themeToggle.addEventListener('change', (e) => {
-    document.body.classList.toggle('dark-mode', e.target.checked);
-    localStorage.setItem('dark-mode', e.target.checked);
-});
+// --- 1. مدیریت نقش‌ها ---
+if (db.role) { initApp(); } 
+else { showView('role'); }
 
-// --- ابزارهای نگارشی و تشخیص وضعیت (Active State) ---
-toolBtns.forEach(btn => {
-    btn.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // جلوگیری از پریدن انتخاب متن
-        const command = btn.dataset.command;
-        document.execCommand(command, false, null);
-        editor.focus();
-        checkActiveTools();
+document.querySelectorAll('.role-card').forEach(card => {
+    card.addEventListener('click', () => {
+        db.role = card.dataset.role;
+        saveDB();
+        initApp();
     });
 });
 
-// تشخیص اینکه کلمه‌ای که کاربر انتخاب کرده چه افکتی دارد (روشن شدن دکمه ابزار)
-editor.addEventListener('keyup', checkActiveTools);
-editor.addEventListener('mouseup', () => {
-    checkActiveTools();
-    handleWordSelection();
-});
-
-function checkActiveTools() {
-    toolBtns.forEach(btn => {
-        const command = btn.dataset.command;
-        // اگر ابزار روی متن فعال باشد، کلاس active می‌گیرد
-        if (document.queryCommandState(command)) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
+function initApp() {
+    showView('dash');
+    document.getElementById('userRoleBadge').textContent = db.role === 'teacher' ? 'استاد' : 'دانشجو';
+    document.getElementById('editor').style.fontSize = db.settings.font + 'px';
+    document.getElementById('fontSizeSlider').value = db.settings.font;
+    document.getElementById('fontSizeDisplay').textContent = db.settings.font + 'px';
+    renderDashboard();
 }
 
-// --- مسیریابی و داشبورد ---
-function showView(viewName) {
+function showView(viewId) {
     Object.values(views).forEach(v => v.classList.add('hidden'));
-    views[viewName].classList.remove('hidden');
-    backBtn.classList.toggle('hidden', viewName === 'dash');
-    if(viewName === 'dash') renderDashboard();
+    views[viewId].classList.remove('hidden');
+    document.getElementById('backToDashBtn').classList.toggle('hidden', viewId !== 'edit');
 }
+
+// --- 2. داشبورد و مدیریت فایل ---
+function saveDB() { localStorage.setItem('vijarData', JSON.stringify(db)); }
 
 document.getElementById('createNewDocBtn').addEventListener('click', () => {
     currentDocId = Date.now().toString();
-    titleInput.value = '';
+    document.getElementById('documentTitle').value = '';
     editor.innerHTML = '';
     showView('edit');
+    renderPinnedNotes();
 });
 
-backBtn.addEventListener('click', () => showView('dash'));
+document.getElementById('backToDashBtn').addEventListener('click', () => { showView('dash'); renderDashboard(); });
 
 function renderDashboard() {
-    documentsGrid.innerHTML = '';
+    const grid = document.getElementById('documentsGrid');
+    grid.innerHTML = '';
     db.docs.forEach(doc => {
         const card = document.createElement('div');
         card.className = 'doc-card';
         card.innerHTML = `
-            <h3><i class="fa-solid fa-file-lines" style="color: var(--accent)"></i> ${doc.title || 'بدون عنوان'}</h3>
-            <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:10px;">آخرین ویرایش: ${new Date(doc.id * 1).toLocaleDateString('fa-IR')}</p>
+            <h3><i class="fa-solid fa-file-signature" style="color: var(--accent-gold)"></i> ${doc.title || 'جزوه بدون نام'}</h3>
+            <p><i class="fa-regular fa-clock"></i> آخرین تغییر: ${new Date(doc.id * 1).toLocaleDateString('fa-IR')}</p>
         `;
         card.onclick = () => loadDocument(doc.id);
-        documentsGrid.appendChild(card);
+        grid.appendChild(card);
     });
 }
-
-// --- ذخیره و مدیریت جزوه ---
-document.getElementById('saveDocBtn').addEventListener('click', () => {
-    if(!currentDocId) return;
-    
-    const docIndex = db.docs.findIndex(d => d.id === currentDocId);
-    const docData = {
-        id: currentDocId,
-        title: DOMPurify.sanitize(titleInput.value),
-        content: DOMPurify.sanitize(editor.innerHTML)
-    };
-
-    if(docIndex > -1) {
-        db.docs[docIndex] = docData;
-    } else {
-        db.docs.push(docData);
-    }
-    
-    localStorage.setItem('vijarDB', JSON.stringify(db));
-    
-    // افکت ذخیره شدن روی دکمه
-    const btn = document.getElementById('saveDocBtn');
-    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-    setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>', 2000);
-});
 
 function loadDocument(id) {
     const doc = db.docs.find(d => d.id === id);
     if(doc) {
         currentDocId = doc.id;
-        titleInput.value = doc.title;
+        document.getElementById('documentTitle').value = doc.title;
         editor.innerHTML = doc.content;
         showView('edit');
         renderPinnedNotes();
     }
 }
 
-// --- مدیریت هایلایت و یادداشت‌ها ---
-let currentTargetWord = null;
-const modal = document.getElementById('noteModal');
-
-function handleWordSelection() {
-    const selection = window.getSelection();
-    const text = selection.toString().trim();
+document.getElementById('saveDocBtn').addEventListener('click', () => {
+    if(!currentDocId) return;
+    const docData = { id: currentDocId, title: document.getElementById('documentTitle').value, content: editor.innerHTML };
+    const idx = db.docs.findIndex(d => d.id === currentDocId);
+    idx > -1 ? db.docs[idx] = docData : db.docs.push(docData);
+    saveDB();
     
-    // اگر متنی طولانی‌تر از 1 حرف انتخاب شد، آن را تبدیل به span می‌کند
-    if (text.length > 1 && !selection.anchorNode.parentNode.classList.contains('hl-word')) {
-        const wordId = 'word_' + Date.now();
-        const span = document.createElement('span');
-        span.className = 'hl-word';
-        span.id = wordId;
-        span.textContent = text;
+    // افکت ذخیره
+    const btn = document.getElementById('saveDocBtn');
+    btn.style.background = 'var(--accent-green)';
+    setTimeout(() => btn.style.background = '', 1000);
+});
+
+// --- 3. منوی راست‌کلیک سفارشی روی متن انتخاب شده ---
+editor.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    const selection = window.getSelection();
+    if(selection.toString().trim().length > 0) {
+        // ذخیره محدوده متن انتخاب شده
+        selectedTextRange = selection.getRangeAt(0);
         
-        document.execCommand('insertHTML', false, span.outerHTML);
-        attachClickEvents();
+        // نمایش منو در محل موس
+        contextMenu.style.left = e.clientX + 'px';
+        contextMenu.style.top = e.clientY + 'px';
+        contextMenu.classList.remove('hidden');
+    }
+});
+
+// مخفی کردن منو با کلیک در جای دیگر
+document.addEventListener('click', () => contextMenu.classList.add('hidden'));
+
+// عملیات راست‌کلیک
+document.getElementById('menuBold').addEventListener('click', () => {
+    restoreSelection();
+    document.execCommand('bold');
+});
+
+document.getElementById('menuColor').addEventListener('click', () => {
+    restoreSelection();
+    document.getElementById('textColorPicker').click();
+});
+
+document.getElementById('textColorPicker').addEventListener('input', (e) => {
+    document.execCommand('foreColor', false, e.target.value);
+});
+
+function restoreSelection() {
+    if(selectedTextRange) {
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(selectedTextRange);
     }
 }
 
-function attachClickEvents() {
-    document.querySelectorAll('.hl-word').forEach(word => {
-        word.onclick = (e) => {
-            currentTargetWord = e.target;
-            document.getElementById('selectedWordDisplay').textContent = currentTargetWord.textContent;
-            
-            const noteData = db.notes[currentTargetWord.id] || {};
-            document.getElementById('noteInput').value = noteData.text || '';
-            document.getElementById('pinNoteCheck').checked = noteData.isPinned || false;
-            
-            modal.classList.add('show');
-        };
+// --- 4. برچسب‌گذاری (یادداشت‌ها) ---
+const noteModal = document.getElementById('noteModal');
+let currentWordId = null;
+let selectedLabelColor = 'blue';
+
+document.getElementById('menuHighlight').addEventListener('click', () => {
+    restoreSelection();
+    const text = window.getSelection().toString().trim();
+    
+    currentWordId = 'word_' + Date.now();
+    const span = document.createElement('span');
+    span.id = currentWordId;
+    span.className = `hl-word hl-${selectedLabelColor}`;
+    span.textContent = text;
+    
+    document.execCommand('insertHTML', false, span.outerHTML);
+    
+    // باز کردن مودال برای نوشتن توضیح
+    document.getElementById('selectedWordDisplay').textContent = text;
+    document.getElementById('noteInput').value = '';
+    noteModal.classList.add('show');
+});
+
+// انتخاب رنگ برچسب در مودال
+document.querySelectorAll('.color-dot').forEach(dot => {
+    dot.addEventListener('click', (e) => {
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        e.target.classList.add('active');
+        selectedLabelColor = e.target.dataset.color;
     });
-}
+});
 
 document.getElementById('saveNoteBtn').addEventListener('click', () => {
-    if(!currentTargetWord) return;
-    const noteText = document.getElementById('noteInput').value.trim();
-    
-    db.notes[currentTargetWord.id] = {
-        text: DOMPurify.sanitize(noteText),
-        word: currentTargetWord.textContent,
-        isPinned: document.getElementById('pinNoteCheck').checked
-    };
-    
-    localStorage.setItem('vijarDB', JSON.stringify(db));
-    renderPinnedNotes();
-    modal.classList.remove('show');
+    const text = document.getElementById('noteInput').value.trim();
+    if(text && currentWordId) {
+        const wordEl = document.getElementById(currentWordId);
+        // آپدیت رنگ برچسب در متن
+        wordEl.className = `hl-word hl-${selectedLabelColor}`;
+        
+        db.notes[currentWordId] = {
+            word: wordEl.textContent,
+            text: text,
+            color: selectedLabelColor,
+            isPinned: document.getElementById('pinNoteCheck').checked
+        };
+        saveDB();
+        renderPinnedNotes();
+    }
+    noteModal.classList.remove('show');
 });
 
 function renderPinnedNotes() {
@@ -178,26 +184,74 @@ function renderPinnedNotes() {
     area.innerHTML = '';
     Object.values(db.notes).forEach(note => {
         if(note.isPinned) {
-            area.innerHTML += `<div class="note-card"><strong>${note.word}:</strong><p>${note.text}</p></div>`;
+            area.innerHTML += `
+                <div class="note-item" style="border-right-color: var(--accent-${note.color})">
+                    <strong style="color:var(--accent-gold)">${note.word}:</strong>
+                    <p style="margin-top:5px; font-size:0.9rem">${note.text}</p>
+                </div>`;
         }
     });
 }
 
-// بستن مودال‌ها
-document.querySelectorAll('.close-modal').forEach(btn => {
-    btn.onclick = () => {
-        modal.classList.remove('show');
-        document.getElementById('settingsModal').classList.remove('show');
-    };
+// --- 5. وایت‌برد ---
+const canvas = document.getElementById('whiteboard');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+
+canvas.addEventListener('mousedown', () => drawing = true);
+canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+canvas.addEventListener('mousemove', draw);
+
+function draw(e) {
+    if(!drawing) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = document.getElementById('boardColor').value;
+    
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+}
+document.getElementById('clearBoardBtn').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
-document.getElementById('settingsBtn').onclick = () => {
-    document.getElementById('settingsModal').classList.add('show');
+
+// --- 6. تنظیمات گسترده ---
+document.getElementById('settingsBtn').onclick = () => document.getElementById('settingsModal').classList.add('show');
+document.querySelectorAll('.close-modal').forEach(btn => btn.onclick = () => {
+    document.getElementById('settingsModal').classList.remove('show');
+    noteModal.classList.remove('show');
+});
+
+// تغییر فونت
+const fontSlider = document.getElementById('fontSizeSlider');
+fontSlider.addEventListener('input', (e) => {
+    const size = e.target.value;
+    document.getElementById('fontSizeDisplay').textContent = size + 'px';
+    editor.style.fontSize = size + 'px';
+    db.settings.font = size;
+    saveDB();
+});
+
+// ریست نقش
+document.getElementById('resetRoleBtn').onclick = () => {
+    db.role = null; saveDB(); document.getElementById('settingsModal').classList.remove('show'); showView('role');
 };
 
-// تغییر اندازه فونت
-document.getElementById('fontSizeSlider').addEventListener('input', (e) => {
-    editor.style.fontSize = e.target.value + 'px';
-});
+// حذف دیتا
+document.getElementById('clearDataBtn').onclick = () => {
+    if(confirm('آیا مطمئن هستید؟ تمام جزوه‌ها پاک خواهند شد.')) {
+        db = { docs: [], notes: {}, role: db.role, settings: db.settings };
+        saveDB(); renderDashboard(); document.getElementById('settingsModal').classList.remove('show');
+    }
+};
 
-// راه‌اندازی اولیه
-renderDashboard();
+// ابزارهای نوار پایین
+document.querySelectorAll('.tool-btn[data-command]').forEach(btn => {
+    btn.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        document.execCommand(btn.dataset.command, false, null);
+    });
+});

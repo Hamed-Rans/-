@@ -99,4 +99,88 @@
                 <div id="editor" contenteditable="true" class="editor-box" placeholder="شروع به نوشتن کنید..."></div>
                 
                 <!-- نوار ابزار شناور شیشه‌ای -->
-                <div
+                <div class="floating-doc-toolbar">
+                    <!-- دراپ‌داون انیمیشن‌دار کاستوم -->
+                    <div class="custom-dropdown" id="fontDropdown">
+                        <div class="dropdown-selected">انتخاب فونت <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="dropdown-list">
+                            <div class="dropdown-item" data-value="Liana">لیانا (Liana)</div>
+                            <div class="dropdown-item" data-value="Kahroba">کهربا (Kahroba)</div>
+                            <div class="dropdown-item" data-value="Estedad">استعداد (Estedad)</div>
+                            <div class="dropdown-item" data-value="Dana">دانا (Dana)</div>
+                            <div class="dropdown-item" data-value="Vazirmatn">وزیرمتن</div>
+                        </div>
+                    </div>
+                    
+                    <div class="divider"></div>
+                    <button class="tool-btn" data-command="bold"><i class="fa-solid fa-bold"></i></button>
+                    <button class="tool-btn" data-command="italic"><i class="fa-solid fa-italic"></i></button>
+                    <button class="tool-btn" data-command="underline"><i class="fa-solid fa-underline"></i></button>
+                    <div class="divider"></div>
+                    <button class="tool-btn" data-command="justifyRight"><i class="fa-solid fa-align-right"></i></button>
+                    <button class="tool-btn" data-command="justifyCenter"><i class="fa-solid fa-align-center"></i></button>
+                    <button class="tool-btn" data-command="justifyLeft"><i class="fa-solid fa-align-left"></i></button>
+                    <div class="divider"></div>
+                    <input type="color" id="textColorPicker" class="color-picker-input" title="رنگ متن">
+                    <button id="saveDocBtn" class="tool-btn action-btn primary-glow"><i class="fa-solid fa-floppy-disk"></i></button>
+                </div>
+            </main>
+
+            <!-- ستون چپ: نکات و چکنویس تصویری -->
+            <aside class="side-panel left-panel">
+                <div class="notes-panel glass-panel">
+                    <div class="panel-header"><i class="fa-solid fa-thumbtack"></i> نکات پین‌شده</div>
+                    <div id="pinnedNotesArea" class="notes-container"></div>
+                </div>
+                <div class="visual-scratchpad glass-panel">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-pen-nib"></i> چکنویس تصویری
+                        <button id="exportBoardToDocBtn" class="btn-text-small"><i class="fa-solid fa-turn-up"></i> ورود به جزوه</button>
+                    </div>
+                    <div class="scratchpad-tools">
+                        <button class="board-tool active" data-tool="pencil"><i class="fa-solid fa-pencil"></i></button>
+                        <button class="board-tool" data-tool="marker"><i class="fa-solid fa-marker"></i></button>
+                        <button class="board-tool" data-tool="highlighter"><i class="fa-solid fa-highlighter"></i></button>
+                        <button class="board-tool" data-tool="eraser"><i class="fa-solid fa-eraser"></i></button>
+                        <input type="color" id="boardColor" value="#00A693" class="color-picker-input">
+                        <button id="clearBoardBtn" class="board-tool"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                    <canvas id="scratchpadCanvas" width="280" height="200"></canvas>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- مودال افزودن دسته‌بندی -->
+    <div id="addFolderModal" class="modal">
+        <div class="modal-content glass-panel border-accent">
+            <h3>ایجاد دسته‌بندی جدید</h3>
+            <input type="text" id="newFolderName" class="custom-input" placeholder="نام دسته‌بندی (مثلاً: فیزیک)">
+            <div class="modal-actions">
+                <button id="confirmAddFolderBtn" class="btn-primary">ایجاد</button>
+                <button class="btn-text btn-close-modal">لغو</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- پاپ‌آپ یادداشت‌گذاری -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content glass-panel border-accent">
+            <h3>یادداشت برای: <span id="selectedWordDisplay" class="highlight-preview"></span></h3>
+            <textarea id="noteInput" rows="4" placeholder="توضیح خود را بنویسید..." class="custom-textarea"></textarea>
+            <label class="custom-checkbox">
+                <input type="checkbox" id="pinNoteCheck">
+                <span class="checkmark"></span>
+                پین کردن در ستون چپ
+            </label>
+            <div class="modal-actions">
+                <button id="saveNoteBtn" class="btn-primary">ثبت</button>
+                <button class="btn-text btn-close-modal">لغو</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

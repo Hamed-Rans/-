@@ -1,4 +1,7 @@
-let db = JSON.parse(localStorage.getItem('vijarAppV6')) || { docs: [], folders: [], notes: {}, role: null, scratch: '', theme: 'dark' };
+// دیتابیس نسخه جدید و تمیز
+let db = JSON.parse(localStorage.getItem('vijarAppV7')) || { 
+    docs: [], folders: [], notes: {}, role: null, scratch: '', theme: 'dark' 
+};
 let currentDocId = null;
 let currentFolderId = 'all';
 
@@ -10,11 +13,19 @@ const editor = document.getElementById('editor');
 document.body.setAttribute('data-theme', db.theme);
 document.getElementById('themeSelect').value = db.theme;
 
-if(db.role) initApp();
-document.querySelectorAll('.role-card').forEach(card => card.onclick = () => { db.role = card.dataset.role; saveDB(); initApp(); });
+if(db.role) {
+    initApp();
+} else {
+    showView('role-view');
+}
+
+document.querySelectorAll('.role-card').forEach(card => card.onclick = () => { 
+    db.role = card.dataset.role; saveDB(); initApp(); 
+});
 
 function initApp() {
-    showView('dash');
+    showView('dashboard-view');
+    document.getElementById('userRoleBadge').textContent = db.role === 'teacher' ? 'استاد' : 'دانشجو';
     document.getElementById('textScratchpad').value = db.scratch || '';
     renderFolders();
     renderDashboard();
@@ -22,13 +33,14 @@ function initApp() {
 
 function showView(viewId) {
     Object.values(views).forEach(v => v.classList.add('hidden'));
-    views[viewId].classList.remove('hidden');
-    // نمایش دکمه‌های هدر فقط تو ادیتور
-    document.getElementById('backToDashBtn').classList.toggle('hidden', viewId !== 'edit');
-    document.getElementById('importBtn').classList.toggle('hidden', viewId !== 'edit');
-    document.getElementById('exportBtn').classList.toggle('hidden', viewId !== 'edit');
+    document.getElementById(viewId).classList.remove('hidden');
+    
+    // مدیریت دکمه‌های هدر
+    document.getElementById('backToDashBtn').classList.toggle('hidden', viewId !== 'editor-view');
+    document.getElementById('importBtn').classList.toggle('hidden', viewId !== 'editor-view');
+    document.getElementById('exportBtn').classList.toggle('hidden', viewId !== 'editor-view');
 }
-function saveDB() { localStorage.setItem('vijarAppV6', JSON.stringify(db)); }
+function saveDB() { localStorage.setItem('vijarAppV7', JSON.stringify(db)); }
 
 // --- داشبورد و پوشه‌ها ---
 function renderFolders() {
@@ -68,23 +80,30 @@ function renderDashboard() {
 document.getElementById('createNewDocBtn').onclick = () => {
     currentDocId = Date.now().toString();
     document.getElementById('documentTitle').value = ''; 
+    document.getElementById('documentTitle').disabled = false;
+    document.getElementById('lockTitleBtn').innerHTML = '<i class="fa-solid fa-lock-open"></i>';
     editor.innerHTML = ''; 
-    editor.style.fontFamily = "'Estedad', sans-serif";
-    document.querySelector('.dropdown-selected').innerHTML = 'استعداد (Estedad) <i class="fa-solid fa-chevron-down"></i>';
-    showView('edit'); 
+    editor.style.fontFamily = "'YekanBakh', sans-serif";
+    document.querySelector('.dropdown-selected').innerHTML = 'یکان‌بخ (مدرن) <i class="fa-solid fa-chevron-down"></i>';
+    showView('editor-view'); 
 };
-document.getElementById('backToDashBtn').onclick = () => { showView('dash'); renderDashboard(); };
+document.getElementById('backToDashBtn').onclick = () => { showView('dashboard-view'); renderDashboard(); };
 
-// --- ادیتور، فونت و تولبار ---
+// --- ادیتور و نوار ابزار ---
 document.getElementById('textScratchpad').oninput = (e) => { db.scratch = e.target.value; saveDB(); };
 
-// قفل کردن عنوان
+// قفل کردن عنوان جزوه
 const titleInput = document.getElementById('documentTitle');
 const lockBtn = document.getElementById('lockTitleBtn');
 lockBtn.onclick = () => {
     if(titleInput.disabled) { titleInput.disabled = false; lockBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i>'; } 
     else { titleInput.disabled = true; lockBtn.innerHTML = '<i class="fa-solid fa-lock"></i>'; }
 };
+
+// تغییر سایز فونت (نوار بالا)
+let currentFontSize = 18;
+document.getElementById('increaseFontBtn').onclick = () => { currentFontSize += 2; editor.style.fontSize = currentFontSize + 'px'; };
+document.getElementById('decreaseFontBtn').onclick = () => { if(currentFontSize > 12) { currentFontSize -= 2; editor.style.fontSize = currentFontSize + 'px'; } };
 
 // دراپ‌داون فونت (شناور در بالا)
 const fontDrop = document.getElementById('fontDropdown');
@@ -95,11 +114,6 @@ document.querySelectorAll('.dropdown-item').forEach(item => item.onclick = (e) =
     editor.style.fontFamily = `'${e.target.dataset.value}', sans-serif`;
     document.querySelector('.dropdown-selected').innerHTML = `${e.target.textContent} <i class="fa-solid fa-chevron-down"></i>`;
 });
-
-// تغییر سایز فونت
-let currentFontSize = 18;
-document.getElementById('increaseFontBtn').onclick = () => { currentFontSize += 2; editor.style.fontSize = currentFontSize + 'px'; };
-document.getElementById('decreaseFontBtn').onclick = () => { if(currentFontSize > 12) currentFontSize -= 2; editor.style.fontSize = currentFontSize + 'px'; };
 
 const formatBtns = document.querySelectorAll('.toggle-tool');
 formatBtns.forEach(btn => btn.onmousedown = (e) => { e.preventDefault(); document.execCommand(btn.dataset.command, false, null); checkActiveTools(); });
@@ -122,7 +136,7 @@ function loadDoc(id) {
     if(doc) {
         currentDocId = doc.id; titleInput.value = doc.title; editor.innerHTML = doc.content;
         if(doc.font) { editor.style.fontFamily = doc.font; document.querySelector('.dropdown-selected').innerHTML = `فونت اعمال شد <i class="fa-solid fa-chevron-down"></i>`; }
-        showView('edit'); bindNoteHover(); renderPinnedNotes();
+        showView('editor-view'); bindNoteHover(); renderPinnedNotes();
     }
 }
 
@@ -137,7 +151,6 @@ const updateCursor = (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left; const y = e.clientY - rect.top;
     
-    // اگر ماوس داخل بوم است نشانه‌گر را نشان بده
     if(x >= 0 && y >= 0 && x <= canvas.width && y <= canvas.height) {
         cursor.classList.remove('hidden');
         cursor.style.left = `${x}px`; cursor.style.top = `${y}px`;
@@ -239,6 +252,23 @@ function renderPinnedNotes() {
     });
 }
 
+// هاور توضیحات
+const notePopup = document.getElementById('noteViewPopup');
+function bindNoteHover() {
+    document.querySelectorAll('.hl-word').forEach(word => {
+        word.onmouseenter = (e) => {
+            const noteData = db.notes[word.id];
+            if(noteData) {
+                document.getElementById('noteViewContent').textContent = noteData.text;
+                const rect = word.getBoundingClientRect(); 
+                notePopup.style.left = `${rect.right + 15}px`; notePopup.style.top = `${rect.top}px`;
+                notePopup.classList.remove('hidden'); setTimeout(() => notePopup.classList.add('show'), 10);
+            }
+        };
+        word.onmouseleave = () => { notePopup.classList.remove('show'); setTimeout(() => notePopup.classList.add('hidden'), 300); };
+    });
+}
+
 // --- مودال‌ها و تنظیمات ---
 document.querySelectorAll('.btn-close-modal').forEach(b => b.onclick = () => document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')));
 document.getElementById('importBtn').onclick = () => document.getElementById('importModal').classList.add('show');
@@ -247,7 +277,6 @@ document.getElementById('settingsBtn').onclick = () => document.getElementById('
 
 document.getElementById('themeSelect').onchange = (e) => {
     db.theme = e.target.value; saveDB(); document.body.setAttribute('data-theme', db.theme);
-    // وقتی تم عوض شد رنگ هایلایت‌ها رو هم آپدیت می‌کنیم (توسط CSS انجام میشه)
 };
-document.getElementById('resetRoleBtn').onclick = () => { db.role = null; saveDB(); document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); showView('role'); };
+document.getElementById('resetRoleBtn').onclick = () => { db.role = null; saveDB(); document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); showView('role-view'); };
 document.getElementById('clearDataBtn').onclick = () => { if(confirm('مطمئنی می‌خوای کل جزوه‌ها رو پاک کنی؟')) { db = { docs: [], folders: [], notes: {}, role: db.role, scratch: '', theme: db.theme }; saveDB(); location.reload(); } };

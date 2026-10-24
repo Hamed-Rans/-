@@ -174,4 +174,116 @@
     <div id="customContextMenu" class="context-menu glass-panel hidden">
         <ul>
             <li id="menuCopy"><i class="fa-regular fa-copy"></i> کپی</li>
-            <li id="menuCut
+            <li id="menuCut"><i class="fa-solid fa-scissors"></i> کات</li>
+            <li id="menuPaste"><i class="fa-solid fa-paste"></i> پیست</li>
+            <hr>
+            <li id="menuHighlight" class="highlight-option"><i class="fa-solid fa-comment-medical"></i> افزودن توضیح</li>
+            <li id="menuBold"><i class="fa-solid fa-bold"></i> بولد</li>
+            <li id="menuItalic"><i class="fa-solid fa-italic"></i> مورب</li>
+        </ul>
+    </div>
+
+    <!-- پاپ‌آپ مشاهده توضیحات (هاور) -->
+    <div id="noteViewPopup" class="note-view-popup glass-panel hidden">
+        <p id="noteViewContent"></p>
+    </div>
+
+    <!-- ================== مودال‌ها (پاپ‌آپ‌ها) ================== -->
+    
+    <!-- ۱. تنظیمات -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content sq-modal glass-panel">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> تنظیمات</h3>
+                <button class="btn-close-modal btn-close-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <span>تم اپلیکیشن</span>
+                    <select id="themeSelect" class="custom-select">
+                        <option value="dark">تاریک (Dark)</option>
+                        <option value="light">روشن (Light)</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <span>نقش کاربری</span>
+                    <button id="resetRoleBtn" class="btn-ghost-small">تغییر نقش</button>
+                </div>
+                <button id="clearDataBtn" class="btn-danger-outline" style="width:100%; margin-top:10px;">حذف تمام اطلاعات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ۲. یادداشت‌گذاری -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content sq-modal glass-panel">
+            <h3>توضیح برای: <span id="selectedWordDisplay" class="highlight-preview"></span></h3>
+            <textarea id="noteInput" rows="4" placeholder="توضیح..." class="custom-textarea"></textarea>
+            <div class="label-selector">
+                <span>رنگ برچسب:</span>
+                <div class="color-options" id="labelColorOptions">
+                    <div class="color-dot active" data-color="yellow" style="background: #EAB308;"></div>
+                    <div class="color-dot" data-color="blue" style="background: #3B82F6;"></div>
+                    <div class="color-dot" data-color="green" style="background: #10B981;"></div>
+                    <div class="color-dot" data-color="red" style="background: #EF4444;"></div>
+                </div>
+            </div>
+            <label class="custom-checkbox">
+                <input type="checkbox" id="pinNoteCheck"> <span class="checkmark"></span> پین در کناری
+            </label>
+            <div class="modal-actions">
+                <button class="btn-close-modal btn-cancel">لغو</button>
+                <button id="saveNoteBtn" class="btn-primary-compact">ثبت</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ۳. افزودن دسته -->
+    <div id="addFolderModal" class="modal">
+        <div class="modal-content sq-modal glass-panel">
+            <div class="modal-header">
+                <h3>دسته‌بندی جدید</h3>
+                <button class="btn-close-modal btn-close-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="text" id="newFolderName" class="custom-input" placeholder="نام دسته‌بندی...">
+            <div class="modal-actions" style="margin-top:20px;">
+                <button class="btn-close-modal btn-cancel">لغو</button>
+                <button id="confirmAddFolderBtn" class="btn-primary-compact">ایجاد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ۴. افزودن فایل -->
+    <div id="importModal" class="modal">
+        <div class="modal-content sq-modal glass-panel">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-cloud-arrow-up"></i> افزودن مدیا</h3>
+                <button class="btn-close-modal btn-close-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="file" id="fileInput" style="display:none;">
+            <div style="display:flex; gap:15px; margin:20px 0;">
+                <button id="importAsTextBtn" class="btn-ghost" style="flex:1;"><i class="fa-solid fa-file-lines"></i> استخراج متن</button>
+                <button id="importAsMediaBtn" class="btn-ghost" style="flex:1;"><i class="fa-solid fa-image"></i> پیوست فایل</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ۵. خروجی گرفتن -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content sq-modal glass-panel">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-download"></i> دریافت جزوه</h3>
+                <button class="btn-close-modal btn-close-small"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; margin:20px 0;">
+                <button class="btn-ghost" onclick="exportDoc('word')"><i class="fa-solid fa-file-word"></i> فایل Word</button>
+                <button class="btn-ghost" onclick="exportDoc('pdf')"><i class="fa-solid fa-file-pdf"></i> فایل PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

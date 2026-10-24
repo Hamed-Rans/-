@@ -310,4 +310,27 @@
 
             <div class="settings-row">
                 <div class="settings-row-label">
-                    <strong>اندازه فونت پیش
+                    <strong>اندازه فونت پیش‌فرض</strong>
+                    <small>متن اصلی ویرایشگر</small>
+                </div>
+                <select id="defaultFontSizeSelect" class="custom-input" style="width:90px; margin:0; padding:8px;">
+                    <option value="14">۱۴</option>
+                    <option value="16" selected>۱۶</option>
+                    <option value="18">۱۸</option>
+                    <option value="20">۲۰</option>
+                </select>
+            </div>
+
+            <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
+                <button id="resetRoleBtn" class="btn-ghost settings-btn"><i class="fa-solid fa-rotate"></i> انتخاب مجدد نقش</button>
+                <button id="clearDataBtn" class="btn-ghost settings-btn danger"><i class="fa-solid fa-trash-can"></i> حذف تمام اطلاعات</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

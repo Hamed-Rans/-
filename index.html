@@ -4,37 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ویژار | دستیار هوشمند جزوه‌نویسی</title>
-    <!-- اتصال استایل‌ها -->
     <link rel="stylesheet" href="style.css">
-    <!-- آیکون‌ها -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- فونت‌های وب (عارف برای هدر، وزیرمتن و لاله‌زار) -->
-    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Vazirmatn:wght@300;400;700&family=Lalezar&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- هدر شناور و تکه‌تکه (جدا از هم) -->
+    <!-- هدر شناور و تکه‌تکه -->
     <div class="floating-top-nav">
-        <!-- بلوک لوگو -->
         <div class="nav-block brand-block glass-element">
             <i class="fa-solid fa-feather logo-icon"></i>
             <h1 class="brand-name">ویژار</h1>
         </div>
-        <!-- بلوک دکمه‌های عملیاتی -->
         <div class="nav-block actions-block">
-            <button id="backToDashBtn" class="nav-btn glass-element hidden" title="بازگشت به داشبورد"><i class="fa-solid fa-house"></i></button>
+            <button id="backToDashBtn" class="nav-btn glass-element hidden" title="داشبورد"><i class="fa-solid fa-house"></i></button>
             <button id="importBtn" class="nav-btn-text glass-element hidden"><i class="fa-solid fa-cloud-arrow-up"></i> افزودن مدیا</button>
             <button id="exportBtn" class="nav-btn-text glass-element hidden"><i class="fa-solid fa-download"></i> دریافت جزوه</button>
-            <button id="settingsBtn" class="nav-btn glass-element" title="تنظیمات ویژار"><i class="fa-solid fa-sliders"></i></button>
+            <!-- آیکون تنظیمات عوض شد و کلاس icon-squircle گرفت -->
+            <button id="settingsBtn" class="nav-btn icon-squircle glass-element" title="تنظیمات"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </div>
 
-    <!-- ۱. صفحه انتخاب نقش -->
+    <!-- صفحه انتخاب نقش -->
     <section id="role-view" class="view-section active">
         <div class="role-container">
             <div class="role-header">
                 <h2>به <span>ویژار</span> خوش آمدید</h2>
-                <p>برای شروع، نقش خود را در سیستم مشخص کنید</p>
+                <p>جهت تنظیم محیط، نقش خود را انتخاب کنید</p>
             </div>
             <div class="role-cards">
                 <div class="role-card glass-panel" data-role="student">
@@ -49,78 +45,68 @@
         </div>
     </section>
 
-    <!-- ۲. صفحه داشبورد (مدیریت جزوه‌ها) -->
+    <!-- صفحه داشبورد -->
     <section id="dashboard-view" class="view-section hidden">
         <div class="dashboard-layout">
-            <!-- ستون راست: فولدرها -->
             <aside class="sidebar-right glass-panel">
                 <div class="sidebar-header">
-                    <h3><i class="fa-solid fa-folder-tree"></i> دسته‌بندی‌ها</h3>
-                    <button id="addFolderBtn" class="btn-icon-small" title="ایجاد دسته جدید"><i class="fa-solid fa-plus"></i></button>
+                    <!-- آیکون دسته‌بندی عوض شد -->
+                    <h3><i class="fa-solid fa-layer-group"></i> دسته‌بندی‌ها</h3>
+                    <button id="addFolderBtn" class="btn-icon-small"><i class="fa-solid fa-plus"></i></button>
                 </div>
-                <ul id="folderList" class="folder-list">
-                    <!-- لیست دسته‌بندی‌ها اینجا لود می‌شود -->
-                </ul>
+                <ul id="folderList" class="folder-list"></ul>
             </aside>
-            
-            <!-- ستون چپ: جزوه‌ها -->
             <main class="documents-area">
                 <div class="dash-actions">
                     <h2>جزوه‌های من <span id="userRoleBadge" class="custom-badge"></span></h2>
-                    <button id="createNewDocBtn" class="btn-primary"><i class="fa-solid fa-plus"></i> ایجاد جزوه جدید</button>
+                    <!-- دکمه ایجاد جزوه جمع‌وجور شد (توی CSS) -->
+                    <button id="createNewDocBtn" class="btn-primary"><i class="fa-solid fa-plus"></i> ایجاد جزوه</button>
                 </div>
-                <!-- پیام خالی بودن -->
                 <div id="emptyState" class="empty-state hidden glass-panel">
                     <i class="fa-regular fa-folder-open empty-icon"></i>
-                    <p>هیچ جزوه‌ای در این دسته‌بندی یافت نشد.</p>
+                    <p>هیچ جزوه‌ای در اینجا یافت نشد.</p>
                 </div>
-                <div class="documents-grid" id="documentsGrid">
-                    <!-- کارت‌های جزوه اینجا لود می‌شوند -->
-                </div>
+                <div class="documents-grid" id="documentsGrid"></div>
             </main>
         </div>
     </section>
 
-    <!-- ۳. صفحه ویرایشگر (سه ستونه) -->
+    <!-- صفحه ویرایشگر -->
     <section id="editor-view" class="view-section hidden">
         <div class="workspace-layout">
             
-            <!-- ستون راست: چکنویس تایپی -->
+            <!-- چکنویس تایپی -->
             <aside class="side-panel right-panel glass-panel">
                 <div class="panel-header"><i class="fa-solid fa-keyboard"></i> چکنویس تایپی</div>
-                <textarea id="textScratchpad" class="scratchpad-text" placeholder="ایده‌ها، متن‌های موقت یا پیش‌نویس‌های خود را اینجا بنویسید..."></textarea>
+                <textarea id="textScratchpad" class="scratchpad-text" placeholder="ایده‌ها و متن‌های موقت..."></textarea>
             </aside>
 
-            <!-- ستون مرکز: ادیتور اصلی -->
+            <!-- ادیتور اصلی -->
             <main class="editor-main glass-panel">
-                <input type="text" id="documentTitle" class="doc-title-input" placeholder="عنوان جزوه شما...">
+                <input type="text" id="documentTitle" class="doc-title-input" placeholder="عنوان جزوه...">
                 <div id="editor" contenteditable="true" class="editor-box" placeholder="تایپ کنید..."></div>
                 
-                <!-- نوار ابزار شناور پایین (Toolbar) -->
+                <!-- نوار ابزار پایین -->
                 <div class="floating-doc-toolbar glass-element">
-                    <!-- دراپ‌داون فونت -->
                     <div class="custom-dropdown" id="fontDropdown">
-                        <div class="dropdown-selected">انتخاب فونت <i class="fa-solid fa-chevron-down"></i></div>
+                        <div class="dropdown-selected">فونت <i class="fa-solid fa-chevron-down"></i></div>
                         <div class="dropdown-list">
-                            <div class="dropdown-item" data-value="Vazirmatn">وزیرمتن</div>
+                            <div class="dropdown-item" data-value="YekanBakh">یکان‌بخ</div>
                             <div class="dropdown-item" data-value="Liana">لیانا</div>
                             <div class="dropdown-item" data-value="Kahroba">کهربا</div>
                             <div class="dropdown-item" data-value="Estedad">استعداد</div>
-                            <div class="dropdown-item" data-value="Dana">دانا</div>
                         </div>
                     </div>
+                    <div class="divider"></div>
+                    <button class="tool-btn toggle-tool" data-command="bold"><i class="fa-solid fa-bold"></i></button>
+                    <button class="tool-btn toggle-tool" data-command="italic"><i class="fa-solid fa-italic"></i></button>
+                    <button class="tool-btn toggle-tool" data-command="underline"><i class="fa-solid fa-underline"></i></button>
+                    <div class="divider"></div>
+                    <button class="tool-btn" data-command="justifyRight"><i class="fa-solid fa-align-right"></i></button>
+                    <button class="tool-btn" data-command="justifyCenter"><i class="fa-solid fa-align-center"></i></button>
+                    <button class="tool-btn" data-command="justifyLeft"><i class="fa-solid fa-align-left"></i></button>
+                    <div class="divider"></div>
                     
-                    <div class="divider"></div>
-                    <button class="tool-btn toggle-tool" data-command="bold" title="ضخیم"><i class="fa-solid fa-bold"></i></button>
-                    <button class="tool-btn toggle-tool" data-command="italic" title="مورب"><i class="fa-solid fa-italic"></i></button>
-                    <button class="tool-btn toggle-tool" data-command="underline" title="زیرخط"><i class="fa-solid fa-underline"></i></button>
-                    <div class="divider"></div>
-                    <button class="tool-btn" data-command="justifyRight" title="راست‌چین"><i class="fa-solid fa-align-right"></i></button>
-                    <button class="tool-btn" data-command="justifyCenter" title="وسط‌چین"><i class="fa-solid fa-align-center"></i></button>
-                    <button class="tool-btn" data-command="justifyLeft" title="چپ‌چین"><i class="fa-solid fa-align-left"></i></button>
-                    <div class="divider"></div>
-                    
-                    <!-- منوی پالت رنگ (باز شدن به سمت بالا) -->
                     <div class="color-menu-wrapper">
                         <button class="tool-btn" id="textColorBtn" title="رنگ متن"><i class="fa-solid fa-palette"></i></button>
                         <div class="custom-color-popup glass-panel hidden" id="colorPopup">
@@ -138,36 +124,32 @@
                         </div>
                     </div>
 
-                    <div class="divider"></div>
-                    <button id="saveDocBtn" class="tool-btn action-btn primary-glow" title="ذخیره جزوه"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button id="saveDocBtn" class="tool-btn action-btn primary-glow" title="ذخیره"><i class="fa-solid fa-floppy-disk"></i></button>
                 </div>
             </main>
 
-            <!-- ستون چپ: نکات و تخته رسم -->
+            <!-- تخته رسم و نکات -->
             <aside class="side-panel left-panel">
-                <!-- نکات پین‌شده -->
                 <div class="notes-panel glass-panel">
                     <div class="panel-header"><i class="fa-solid fa-thumbtack"></i> نکات پین‌شده</div>
                     <div id="pinnedNotesArea" class="notes-container"></div>
                 </div>
-                <!-- تخته رسم (وایت‌برد) -->
                 <div class="visual-scratchpad glass-panel">
                     <div class="panel-header">
                         <i class="fa-solid fa-pen-nib"></i> تخته رسم
-                        <button id="exportBoardToDocBtn" class="btn-text-small" title="افزودن به جزوه"><i class="fa-solid fa-turn-up"></i> ورود به جزوه</button>
+                        <button id="exportBoardToDocBtn" class="btn-text-small"><i class="fa-solid fa-turn-up"></i> ورود به جزوه</button>
                     </div>
                     <div class="scratchpad-tools">
                         <button class="board-tool active" data-tool="pencil" title="قلم"><i class="fa-solid fa-pencil"></i></button>
                         <button class="board-tool" data-tool="highlighter" title="هایلایتر"><i class="fa-solid fa-highlighter"></i></button>
-                        <!-- ابزارهای رسم اشکال -->
                         <div class="shape-tools">
-                            <button class="board-tool" data-tool="line" title="رسم خط"><i class="fa-solid fa-minus"></i></button>
-                            <button class="board-tool" data-tool="rect" title="رسم مربع"><i class="fa-regular fa-square"></i></button>
-                            <button class="board-tool" data-tool="circle" title="رسم دایره"><i class="fa-regular fa-circle"></i></button>
+                            <button class="board-tool" data-tool="line" title="خط"><i class="fa-solid fa-minus"></i></button>
+                            <button class="board-tool" data-tool="rect" title="مربع"><i class="fa-regular fa-square"></i></button>
+                            <button class="board-tool" data-tool="circle" title="دایره"><i class="fa-regular fa-circle"></i></button>
                         </div>
                         <button class="board-tool" data-tool="eraser" title="پاک‌کن"><i class="fa-solid fa-eraser"></i></button>
-                        <input type="color" id="boardColor" value="#00A693" class="color-picker-simple" title="رنگ قلم">
-                        <button id="clearBoardBtn" class="board-tool" title="پاک کردن کل تخته"><i class="fa-solid fa-trash-can"></i></button>
+                        <input type="color" id="boardColor" value="#00A693" class="color-picker-simple">
+                        <button id="clearBoardBtn" class="board-tool"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                     <canvas id="scratchpadCanvas" width="280" height="220"></canvas>
                 </div>
@@ -175,35 +157,32 @@
         </div>
     </section>
 
-    <!-- ================== المان‌های شناور و پاپ‌آپ‌ها ================== -->
-
-    <!-- تولتیپ افزودن توضیح (نمایش روی کلمه انتخاب شده) -->
+    <!-- تولتیپ انتخاب متن -->
     <div id="quickTooltip" class="quick-tooltip hidden">
-        <button id="quickAddNoteBtn"><i class="fa-solid fa-comment-medical"></i> ثبت توضیح</button>
+        <button id="quickAddNoteBtn"><i class="fa-solid fa-comment-medical"></i> افزودن توضیح</button>
     </div>
 
-    <!-- منوی راست‌کلیک سفارشی -->
+    <!-- منوی راست‌کلیک -->
     <div id="customContextMenu" class="context-menu glass-panel hidden">
         <ul>
-            <li id="menuCopy"><i class="fa-regular fa-copy"></i> کپی کردن</li>
-            <li id="menuCut"><i class="fa-solid fa-scissors"></i> کات کردن</li>
-            <li id="menuPaste"><i class="fa-solid fa-paste"></i> چسباندن (Paste)</li>
+            <li id="menuCopy"><i class="fa-regular fa-copy"></i> کپی</li>
+            <li id="menuCut"><i class="fa-solid fa-scissors"></i> کات</li>
+            <li id="menuPaste"><i class="fa-solid fa-paste"></i> چسباندن</li>
             <hr>
-            <li id="menuBold"><i class="fa-solid fa-bold"></i> بولد کردن</li>
-            <li id="menuItalic"><i class="fa-solid fa-italic"></i> مورب کردن</li>
+            <li id="menuBold"><i class="fa-solid fa-bold"></i> بولد</li>
+            <li id="menuItalic"><i class="fa-solid fa-italic"></i> مورب</li>
         </ul>
     </div>
 
-    <!-- کادر نمایش توضیحات هنگام هاور روی کلمات -->
     <div id="noteViewPopup" class="note-view-popup glass-panel hidden">
         <p id="noteViewContent"></p>
     </div>
 
-    <!-- مودال ثبت یادداشت برای کلمه -->
+    <!-- مودال‌ها -->
     <div id="noteModal" class="modal">
         <div class="modal-content glass-panel border-top-accent">
             <h3>توضیح برای: <span id="selectedWordDisplay" class="highlight-preview"></span></h3>
-            <textarea id="noteInput" rows="4" placeholder="توضیح خود را بنویسید..." class="custom-textarea"></textarea>
+            <textarea id="noteInput" rows="4" placeholder="توضیح..." class="custom-textarea"></textarea>
             <div class="label-selector">
                 <span>رنگ برچسب:</span>
                 <div class="color-options" id="labelColorOptions">
@@ -214,89 +193,65 @@
                 </div>
             </div>
             <label class="custom-checkbox">
-                <input type="checkbox" id="pinNoteCheck"> <span class="checkmark"></span> پین کردن در ستون کناری
+                <input type="checkbox" id="pinNoteCheck"> <span class="checkmark"></span> پین در ستون کناری
             </label>
             <div class="modal-actions">
-                <button id="saveNoteBtn" class="btn-primary">ثبت</button>
                 <button class="btn-text btn-close-modal">لغو</button>
+                <button id="saveNoteBtn" class="btn-primary">ثبت</button>
             </div>
         </div>
     </div>
     
-    <!-- مودال افزودن دسته‌بندی جدید -->
     <div id="addFolderModal" class="modal">
         <div class="modal-content glass-panel border-top-accent">
             <h3>دسته‌بندی جدید</h3>
-            <input type="text" id="newFolderName" class="custom-input" placeholder="نام دسته‌بندی...">
+            <input type="text" id="newFolderName" class="custom-input" placeholder="نام...">
             <div class="modal-actions">
-                <button id="confirmAddFolderBtn" class="btn-primary">ایجاد دسته‌بندی</button>
                 <button class="btn-text btn-close-modal">لغو</button>
+                <button id="confirmAddFolderBtn" class="btn-primary">ایجاد دسته‌بندی</button>
             </div>
         </div>
     </div>
 
-    <!-- مودال بارگذاری فایل -->
+    <!-- مودال ایمپورت و اکسپورت (ساختار خلاصه و حفظ شده) -->
     <div id="importModal" class="modal">
         <div class="modal-content glass-panel border-top-accent">
-            <h3><i class="fa-solid fa-file-import"></i> افزودن مدیا به جزوه</h3>
-            <p>چگونه می‌خواهید محتوا را وارد کنید؟</p>
+            <h3><i class="fa-solid fa-cloud-arrow-up"></i> افزودن مدیا</h3>
             <input type="file" id="fileInput" class="hidden-input" style="display:none;">
-            <div class="action-cards" style="display: flex; gap: 15px; margin: 20px 0;">
-                <div class="action-card glass-panel" id="importAsTextBtn" style="flex:1; padding:20px; cursor:pointer; text-align:center;">
-                    <i class="fa-solid fa-file-lines" style="font-size:2rem; margin-bottom:10px; color:var(--accent-persian);"></i>
-                    <h4>استخراج متن</h4>
-                    <p style="font-size:0.8rem; color:var(--text-muted);">متن فایل خوانده می‌شود.</p>
-                </div>
-                <div class="action-card glass-panel" id="importAsMediaBtn" style="flex:1; padding:20px; cursor:pointer; text-align:center;">
-                    <i class="fa-solid fa-image" style="font-size:2rem; margin-bottom:10px; color:var(--accent-persian);"></i>
-                    <h4>پیوست تصویر</h4>
-                    <p style="font-size:0.8rem; color:var(--text-muted);">عکس مستقیماً وارد می‌شود.</p>
-                </div>
+            <div style="display:flex; gap:15px; margin:20px 0;">
+                <button id="importAsTextBtn" class="btn-ghost" style="flex:1;"><i class="fa-solid fa-file-lines"></i> استخراج متن</button>
+                <button id="importAsMediaBtn" class="btn-ghost" style="flex:1;"><i class="fa-solid fa-image"></i> پیوست فایل</button>
             </div>
-            <button class="btn-text btn-close-modal">انصراف</button>
+            <button class="btn-text btn-close-modal">لغو</button>
         </div>
     </div>
 
-    <!-- مودال خروجی گرفتن -->
     <div id="exportModal" class="modal">
         <div class="modal-content glass-panel border-top-accent">
             <h3><i class="fa-solid fa-download"></i> دریافت جزوه</h3>
-            <p>فرمت خروجی خود را انتخاب کنید:</p>
-            <div class="export-options" style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
-                <button class="btn-ghost" onclick="exportDoc('word')" style="justify-content: center;"><i class="fa-solid fa-file-word"></i> خروجی Word</button>
-                <button class="btn-ghost" onclick="exportDoc('pdf')" style="justify-content: center;"><i class="fa-solid fa-file-pdf"></i> خروجی PDF</button>
-                <button class="btn-ghost" onclick="exportDoc('image')" style="justify-content: center;"><i class="fa-solid fa-image"></i> خروجی عکس (PNG)</button>
+            <div style="display:flex; flex-direction:column; gap:10px; margin:20px 0;">
+                <button class="btn-ghost" onclick="exportDoc('word')">Word</button>
+                <button class="btn-ghost" onclick="exportDoc('pdf')">PDF</button>
             </div>
-            <button class="btn-text btn-close-modal">بستن</button>
+            <button class="btn-text btn-close-modal">لغو</button>
         </div>
     </div>
 
     <!-- مودال تنظیمات -->
     <div id="settingsModal" class="modal">
         <div class="modal-content glass-panel border-top-accent">
-            <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom: 20px;">
-                <h3 style="margin:0;"><i class="fa-solid fa-sliders"></i> تنظیمات برنامه</h3>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3 style="margin:0;"><i class="fa-solid fa-bars-staggered"></i> تنظیمات</h3>
                 <button class="btn-close-modal btn-icon-small"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="settings-body">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                    <span>تغییر نقش کاربری</span>
-                    <button id="resetRoleBtn" class="btn-ghost">انتخاب مجدد نقش</button>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>پاکسازی کل اطلاعات</span>
-                    <button id="clearDataBtn" class="btn-ghost" style="color: #EF4444; border-color: rgba(239, 68, 68, 0.3);">حذف اطلاعات</button>
-                </div>
-            </div>
+            <button id="resetRoleBtn" class="btn-ghost" style="width:100%; margin-bottom:10px;">انتخاب مجدد نقش</button>
+            <button id="clearDataBtn" class="btn-ghost" style="width:100%; color:#EF4444; border-color:#EF4444;">حذف اطلاعات</button>
         </div>
     </div>
 
-    <!-- کتابخانه‌های کمکی -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.3/purify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- فایل جاوااسکریپت اصلی -->
     <script src="app.js"></script>
 </body>
 </html>
